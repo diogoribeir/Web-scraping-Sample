@@ -1,0 +1,25 @@
+{
+  "_comment": "Camada A — fatos determinísticos por lookup. Em produção viriam de Verbiste (conjugação) e Lexique.org/Wiktionary-Kaikki (gênero/léxico). Aqui um subconjunto curado para a Fase 1.",
+  "conjugacoes": [
+    { "tipo": "conjugacao", "infinitivo": "vouloir", "tempo": "présent", "pessoa": "je", "forma": "veux", "fonte": "Verbiste" },
+    { "tipo": "conjugacao", "infinitivo": "vouloir", "tempo": "conditionnel", "pessoa": "je", "forma": "voudrais", "fonte": "Verbiste" },
+    { "tipo": "conjugacao", "infinitivo": "avoir", "tempo": "présent", "pessoa": "je", "forma": "ai", "fonte": "Verbiste" },
+    { "tipo": "conjugacao", "infinitivo": "être", "tempo": "présent", "pessoa": "je", "forma": "suis", "fonte": "Verbiste" },
+    { "tipo": "conjugacao", "infinitivo": "pouvoir", "tempo": "présent", "pessoa": "je", "forma": "peux", "fonte": "Verbiste" },
+    { "tipo": "conjugacao", "infinitivo": "parler", "tempo": "présent", "pessoa": "je", "forma": "parle", "fonte": "Verbiste" },
+    { "tipo": "conjugacao", "infinitivo": "aller", "tempo": "présent", "pessoa": "je", "forma": "vais", "fonte": "Verbiste" },
+    { "tipo": "conjugacao", "infinitivo": "prendre", "tempo": "présent", "pessoa": "je", "forma": "prends", "fonte": "Verbiste" }
+  ],
+  "generos": [
+    { "tipo": "genero", "palavra": "addition", "genero": "f", "artigo": "l'", "fonte": "Lexique.org" },
+    { "tipo": "genero", "palavra": "café", "genero": "m", "artigo": "le", "fonte": "Lexique.org" },
+    { "tipo": "genero", "palavra": "chambre", "genero": "f", "artigo": "la", "fonte": "Lexique.org" },
+    { "tipo": "genero", "palavra": "hôtel", "genero": "m", "artigo": "l'", "fonte": "Lexique.org" },
+    { "tipo": "genero", "palavra": "gare", "genero": "f", "artigo": "la", "fonte": "Lexique.org" },
+    { "tipo": "genero", "palavra": "billet", "genero": "m", "artigo": "le", "fonte": "Lexique.org" },
+    { "tipo": "genero", "palavra": "eau", "genero": "f", "artigo": "l'", "fonte": "Lexique.org" },
+    { "tipo": "genero", "palavra": "pain", "genero": "m", "artigo": "le", "fonte": "Lexique.org" },
+    { "tipo": "genero", "palavra": "pharmacie", "genero": "f", "artigo": "la", "fonte": "Lexique.org" },
+    { "tipo": "genero", "palavra": "menu", "genero": "m", "artigo": "le", "fonte": "Lexique.org" }
+  ]
+}

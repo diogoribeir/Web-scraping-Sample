@@ -1,0 +1,135 @@
+{
+  "_comment": "Camada B — conteúdo curado. Em produção, semeado do Tatoeba e cruzado com Google Translation API + dicionário (Larousse/Le Robert/WordReference) antes de receber status 'verificado'. Aqui um núcleo PT→FR para a Fase 1.",
+  "itens": [
+    {
+      "id": "fr-rest-01",
+      "tipo": "frase",
+      "situacao": "restaurante",
+      "alvo": "L'addition, s'il vous plaît.",
+      "traducao": "A conta, por favor.",
+      "nivel": "iniciante",
+      "fonte": "Tatoeba #401 + Larousse",
+      "status": "verificado"
+    },
+    {
+      "id": "fr-rest-02",
+      "tipo": "frase",
+      "situacao": "restaurante",
+      "alvo": "Je voudrais un café, s'il vous plaît.",
+      "traducao": "Eu gostaria de um café, por favor.",
+      "nivel": "iniciante",
+      "fonte": "Tatoeba #1188 + Le Robert",
+      "status": "verificado"
+    },
+    {
+      "id": "fr-rest-03",
+      "tipo": "regra",
+      "situacao": "restaurante",
+      "alvo": "Je voudrais + [substantivo]",
+      "traducao": "'Je voudrais' (eu gostaria) é a forma educada de pedir. Mais gentil que 'je veux' (eu quero).",
+      "nivel": "iniciante",
+      "fonte": "Larousse (conditionnel de politesse)",
+      "status": "verificado"
+    },
+    {
+      "id": "fr-hotel-01",
+      "tipo": "frase",
+      "situacao": "hotel",
+      "alvo": "J'ai une réservation au nom de Diogo.",
+      "traducao": "Tenho uma reserva em nome de Diogo.",
+      "nivel": "iniciante",
+      "fonte": "Tatoeba #2031 + WordReference",
+      "status": "verificado"
+    },
+    {
+      "id": "fr-hotel-02",
+      "tipo": "frase",
+      "situacao": "hotel",
+      "alvo": "À quelle heure est le petit-déjeuner ?",
+      "traducao": "A que horas é o café da manhã?",
+      "nivel": "iniciante",
+      "fonte": "Tatoeba #3320 + Larousse",
+      "status": "verificado"
+    },
+    {
+      "id": "fr-rua-01",
+      "tipo": "frase",
+      "situacao": "rua",
+      "alvo": "Où sont les toilettes ?",
+      "traducao": "Onde fica o banheiro?",
+      "nivel": "iniciante",
+      "fonte": "Tatoeba #511 + Le Robert",
+      "status": "verificado"
+    },
+    {
+      "id": "fr-rua-02",
+      "tipo": "frase",
+      "situacao": "rua",
+      "alvo": "Excusez-moi, où est la gare ?",
+      "traducao": "Com licença, onde fica a estação?",
+      "nivel": "iniciante",
+      "fonte": "Tatoeba #770 + Larousse",
+      "status": "verificado"
+    },
+    {
+      "id": "fr-transp-01",
+      "tipo": "frase",
+      "situacao": "transporte",
+      "alvo": "Un billet pour Paris, s'il vous plaît.",
+      "traducao": "Uma passagem para Paris, por favor.",
+      "nivel": "iniciante",
+      "fonte": "Tatoeba #2890 + WordReference",
+      "status": "verificado"
+    },
+    {
+      "id": "fr-compras-01",
+      "tipo": "frase",
+      "situacao": "compras",
+      "alvo": "Combien ça coûte ?",
+      "traducao": "Quanto custa?",
+      "nivel": "iniciante",
+      "fonte": "Tatoeba #98 + Larousse",
+      "status": "verificado"
+    },
+    {
+      "id": "fr-emerg-01",
+      "tipo": "frase",
+      "situacao": "emergencia",
+      "alvo": "Où est la pharmacie la plus proche ?",
+      "traducao": "Onde fica a farmácia mais próxima?",
+      "nivel": "iniciante",
+      "fonte": "Tatoeba #4102 + Le Robert",
+      "status": "verificado"
+    },
+    {
+      "id": "fr-emerg-02",
+      "tipo": "frase",
+      "situacao": "emergencia",
+      "alvo": "J'ai besoin d'aide.",
+      "traducao": "Preciso de ajuda.",
+      "nivel": "iniciante",
+      "fonte": "Tatoeba #66 + Larousse",
+      "status": "verificado"
+    },
+    {
+      "id": "fr-geral-01",
+      "tipo": "regra",
+      "situacao": "geral",
+      "alvo": "PT -ção → FR -tion",
+      "traducao": "Muitas palavras em -ção viram -tion: 'reservação/reserva' → 'réservation', 'adição/conta' → 'addition'. Um atalho de cognatos.",
+      "nivel": "iniciante",
+      "fonte": "padrão de cognatos PT-FR",
+      "status": "verificado"
+    },
+    {
+      "id": "fr-geral-02",
+      "tipo": "frase",
+      "situacao": "geral",
+      "alvo": "Pardon, je ne parle pas bien français.",
+      "traducao": "Desculpe, eu não falo bem francês.",
+      "nivel": "iniciante",
+      "fonte": "Tatoeba #155 + Larousse",
+      "status": "verificado"
+    }
+  ]
+}
