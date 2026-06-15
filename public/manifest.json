@@ -1,0 +1,17 @@
+{
+  "name": "Bagagem — Tutor de Idiomas para Viagem",
+  "short_name": "Bagagem",
+  "description": "Tutor de IA que ensina a entender e construir um idioma para uma viagem específica.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#1f6feb",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
