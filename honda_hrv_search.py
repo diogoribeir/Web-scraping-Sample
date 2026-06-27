@@ -1,6 +1,7 @@
 """
 Honda HR-V Search
 Busca anúncios de Honda HR-V até R$ 80.000 nos principais sites do Brasil.
+Filtra por cor (sem branco) e localização (SP capital + cidades até ~1h20).
 Analisa preço, quilometragem, ano e descrição para ranquear as melhores oportunidades.
 """
 
@@ -8,12 +9,50 @@ import requests
 import json
 import re
 import time
+import unicodedata
 from datetime import datetime
 
 # ── Configurações ────────────────────────────────────────────────────────────
 MAX_PRICE = 80_000
 MAX_KM_IDEAL = 100_000   # km considerado bom
 ANO_BASE = 2015          # ano mínimo relevante
+
+# Cores excluídas (normalizado sem acento, minúsculo)
+CORES_EXCLUIDAS = {"branco", "branca", "white", "off white", "off-white", "pérola", "perola"}
+
+# Cidades aceitas: SP capital + região até ~1h20 de carro
+# (normalizado: sem acento, minúsculo)
+CIDADES_ACEITAS = {
+    # Capital
+    "sao paulo",
+    # Grande SP
+    "guarulhos", "osasco", "sao bernardo do campo", "santo andre", "diadema",
+    "maua", "ribeirao pires", "rio grande da serra", "sao caetano do sul",
+    "mogi das cruzes", "suzano", "poa", "ferraz de vasconcelos",
+    "itaquaquecetuba", "aruja", "carapicuiba", "itapevi", "jandira",
+    "barueri", "santana de parnaiba", "pirapora do bom jesus", "cotia",
+    "embu das artes", "embu", "taboao da serra", "itapecerica da serra",
+    "sao lourenco da serra", "mairipora", "francisco morato",
+    "franco da rocha", "caieiras", "cajamar", "biritiba mirim",
+    # Campinas e entorno
+    "campinas", "valinhos", "vinhedo", "itatiba", "jundiai", "louveira",
+    "itupeva", "indaiatuba", "salto", "itu", "americana", "sumare",
+    "nova odessa", "hortolandia", "santa barbara d'oeste",
+    "santa barbara do oeste", "paulinia", "cosmopolis", "arthur nogueira",
+    "artur nogueira", "engenheiro coelho", "holambra", "monte mor",
+    # Bragança / Atibaia
+    "atibaia", "braganca paulista", "campo limpo paulista",
+    "varzea paulista", "jarinu", "nazare paulista", "piracaia",
+    "tuiuti", "pedra bela",
+    # Sorocaba e entorno
+    "sorocaba", "votorantim", "aracoiaba da serra", "porto feliz",
+    "boituva", "tatuí", "tatui", "iperó", "ipero",
+    # Via Dutra (leste)
+    "jacareí", "jacaeri", "sao jose dos campos",
+    # Outros próximos
+    "ibiuna", "sao roque", "mairinque", "aluminio", "araçariguama",
+    "aracariguama", "pirapora do bom jesus",
+}
 
 HEADERS = {
     "User-Agent": (
@@ -39,6 +78,37 @@ RED_FLAGS = [
 
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
+
+def normalizar(texto: str) -> str:
+    """Remove acentos e coloca em minúsculo para comparação."""
+    if not texto:
+        return ""
+    s = unicodedata.normalize("NFD", texto.lower())
+    return "".join(c for c in s if unicodedata.category(c) != "Mn")
+
+
+def cor_permitida(cor: str | None, titulo: str = "") -> bool:
+    """Retorna False se a cor for branco (em qualquer variação)."""
+    texto = normalizar((cor or "") + " " + (titulo or ""))
+    for excluida in CORES_EXCLUIDAS:
+        # Checa cor exata no campo cor ou menção no título
+        if cor and normalizar(cor) == excluida:
+            return False
+        # "branco" no título só exclui se vier precedido de "cor" ou "na cor"
+        if re.search(rf"\b{re.escape(excluida)}\b", normalizar(cor or "")):
+            return False
+    return True
+
+
+def cidade_permitida(cidade: str | None, estado: str | None) -> bool:
+    """Retorna True se a cidade estiver na lista de cidades aceitas."""
+    if not cidade:
+        return True  # sem info de cidade, não exclui
+    # Garante que seja SP
+    if estado and normalizar(estado) not in {"sp", "são paulo", "sao paulo"}:
+        return False
+    return normalizar(cidade) in CIDADES_ACEITAS
+
 
 def parse_km(value) -> int | None:
     if value is None:
@@ -355,6 +425,7 @@ def imprimir_resultado(rank: int, listing: dict, score: float):
 def main():
     print("=" * 70)
     print("  HONDA HR-V — Buscador de oportunidades até R$ 80.000")
+    print("  Cor: qualquer (exceto branco) | Local: SP + ~1h20")
     print(f"  {datetime.now().strftime('%d/%m/%Y %H:%M')}")
     print("=" * 70)
     print("\nBuscando nos sites...")
@@ -377,14 +448,29 @@ def main():
             vistos.add(chave)
             unicos.append(item)
 
+    total_bruto = len(unicos)
+
+    # ── Filtro de cor ────────────────────────────────────────────────────────
+    sem_cor_invalida = [x for x in unicos if cor_permitida(x.get("cor"), x.get("titulo", ""))]
+    removidos_cor = total_bruto - len(sem_cor_invalida)
+
+    # ── Filtro de cidade ─────────────────────────────────────────────────────
+    filtrados = [x for x in sem_cor_invalida if cidade_permitida(x.get("cidade"), x.get("estado"))]
+    removidos_cidade = len(sem_cor_invalida) - len(filtrados)
+
+    print(f"\n  Filtros aplicados:")
+    print(f"    Cor (sem branco)   : -{removidos_cor} anúncios removidos")
+    print(f"    Cidade (SP + 1h20) : -{removidos_cidade} anúncios removidos")
+
     # Pontua e ordena
-    for item in unicos:
+    for item in filtrados:
         item["_score"] = score_listing(item)
 
-    ranking = sorted(unicos, key=lambda x: x["_score"], reverse=True)
+    ranking = sorted(filtrados, key=lambda x: x["_score"], reverse=True)
 
     print(f"\n{'=' * 70}")
-    print(f"  {len(ranking)} anúncios únicos | Mostrando top 25 melhores negócios")
+    print(f"  {len(ranking)} anúncios | Mostrando top 25 melhores negócios")
+    print(f"  Filtros: Cor ≠ branco | SP capital + cidades até ~1h20")
     print(f"{'=' * 70}")
 
     for i, item in enumerate(ranking[:25], 1):
@@ -397,14 +483,17 @@ def main():
     print(f"\n{'=' * 70}")
     print("  RESUMO")
     print(f"{'=' * 70}")
+    print(f"  Total bruto coletado : {total_bruto}")
+    print(f"  Removidos (cor)      : {removidos_cor}")
+    print(f"  Removidos (cidade)   : {removidos_cidade}")
+    print(f"  Anúncios válidos     : {len(ranking)}")
     if precos:
-        print(f"  Preço médio : {fmt_price(sum(precos) / len(precos))}")
-        print(f"  Mais barato : {fmt_price(min(precos))}")
-        print(f"  Mais caro   : {fmt_price(max(precos))}")
+        print(f"  Preço médio  : {fmt_price(int(sum(precos) / len(precos)))}")
+        print(f"  Mais barato  : {fmt_price(min(precos))}")
+        print(f"  Mais caro    : {fmt_price(max(precos))}")
     if kms:
-        print(f"  KM médio    : {fmt_km(int(sum(kms) / len(kms)))}")
-        print(f"  Menor KM    : {fmt_km(min(kms))}")
-    print(f"  Total anúncios: {len(ranking)}")
+        print(f"  KM médio     : {fmt_km(int(sum(kms) / len(kms)))}")
+        print(f"  Menor KM     : {fmt_km(min(kms))}")
     print()
 
 
