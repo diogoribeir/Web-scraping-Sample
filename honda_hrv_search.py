@@ -17,11 +17,9 @@ from datetime import datetime
 #  CONFIGURAÇÕES — edite aqui
 # ══════════════════════════════════════════════════════════════════════════════
 ANO_ALVO         = 2017
+ANO_ATE          = 2018      # aceita 2017/2018 (fabricação 2017, modelo 2018)
 VERSAO_ALVO      = "EXL"
-PRECO_MAX_BUSCA  = 90_000    # teto de busca
-PRECO_NORMAL_MAX = 87_000    # preço máximo padrão
-PRECO_PERFEITO   = 90_000    # até 90k aceito SE score >= SCORE_PERFEITO
-SCORE_PERFEITO   = 75        # score mínimo para aceitar preço entre 87k e 90k
+PRECO_MAX_BUSCA  = 90_000    # preço máximo absoluto
 PRECO_FIPE_REF   = 83_000    # referência FIPE 2017 EXL (~2026)
 KM_EXCELENTE     = 70_000
 KM_LIMITE_ALERTA = 160_000
@@ -125,8 +123,10 @@ def eh_exl(titulo: str, versao: str | None, fonte: str = "") -> bool:
 
 def eh_ano_certo(titulo: str, ano) -> bool:
     ano_str = str(ano or "")[:4]
-    if ano_str == str(ANO_ALVO): return True
-    if str(ANO_ALVO) in norm(titulo): return True
+    anos_aceitos = {str(a) for a in range(ANO_ALVO, ANO_ATE + 1)}
+    if ano_str in anos_aceitos: return True
+    t = norm(titulo)
+    if any(str(a) in t for a in range(ANO_ALVO, ANO_ATE + 1)): return True
     if not ano_str: return True
     return False
 
@@ -335,39 +335,88 @@ def buscar_mercadolivre() -> list[dict]:
 
 
 def buscar_webmotors() -> list[dict]:
-    """Site 2 — WebMotors"""
+    """Site 2 — WebMotors (URL com filtros exatos: EXL, SP, sem branco, até 90k)"""
     print("  [2] WebMotors...")
     resultados = []
-    base = (f"https://www.webmotors.com.br/carros/estoque/?TipoVeiculo=carros"
-            f"&Marca=HONDA&Modelo=HR-V&AnoModelo={ANO_ALVO}&PrecoAte={PRECO_MAX_BUSCA}")
+    # URL com filtros completos validados pelo usuário
+    WM_BASE = ("https://www.webmotors.com.br/carros/sp/honda/hr-v"
+               "/18-16v-flex-exl-4p-automatico/ate.2018")
+    WM_FILTROS_FIXOS = (
+        "tipoveiculo=carros&estadocidade=S%C3%A3o%20Paulo"
+        "&marca1=HONDA&modelo1=HR-V"
+        "&versao1=1.8%2016V%20FLEX%20EXL%204P%20AUTOM%C3%81TICO"
+        "&kmate=120000&blindado=Sem%20blindagem"
+        "&cor=Cinza%7CPrata%7CPreto%7CLaranja%7CAzul%7CVermelho%7CAmarelo"
+        f"&precoate={PRECO_MAX_BUSCA}"
+    )
     h = {**HEADERS_JSON,
-         "Referer": "https://www.webmotors.com.br/",
+         "Referer": WM_BASE,
          "Origin": "https://www.webmotors.com.br"}
     for page in range(1, 6):
+        url_paginada = f"{WM_BASE}?{WM_FILTROS_FIXOS}&page={page}"
+        # Tenta API primeiro
         r = fazer_get("https://www.webmotors.com.br/api/search/car",
-                      params={"url":f"{base}&Pag={page}","actualPage":page,
-                              "displayPerPage":24,"order":1,"showMenu":"true","listFilters":"true"},
+                      params={"url": url_paginada, "actualPage": page,
+                              "displayPerPage": 24, "order": 1,
+                              "showMenu": "true", "listFilters": "true"},
                       headers=h,
-                      dominio="webmotors.com.br", homepage="https://www.webmotors.com.br/")
-        if not r: break
-        try: data = r.json()
-        except: break
-        anuncios = data.get("SearchResults",[])
-        if not anuncios: break
+                      dominio="webmotors.com.br", homepage=WM_BASE)
+        anuncios = []
+        if r:
+            try:
+                data = r.json()
+                anuncios = data.get("SearchResults", [])
+            except:
+                pass
+        if not anuncios:
+            # Fallback: scraping HTML da página filtrada
+            r2 = fazer_get(url_paginada,
+                           dominio="webmotors.com.br", homepage=WM_BASE)
+            if r2:
+                nd = extrair_next_data(r2.text)
+                raw = (nd.get("props",{}).get("pageProps",{}).get("searchResults")
+                       or nd.get("props",{}).get("pageProps",{}).get("ads")
+                       or [])
+                for a in raw:
+                    spec = a.get("Specification", a)
+                    preco = (a.get("Prices",{}).get("Price")
+                             or a.get("Prices",{}).get("PriceValue")
+                             or a.get("price"))
+                    if preco and preco > PRECO_MAX_BUSCA: continue
+                    uid = a.get("UniqueId") or a.get("id","")
+                    resultados.append({
+                        "fonte": "WebMotors",
+                        "titulo": (a.get("title") or
+                                   f"{spec.get('Make','')} {spec.get('Model','')} "
+                                   f"{spec.get('Version','')} {spec.get('ModelYear','')}".strip()),
+                        "preco": preco,
+                        "km": spec.get("OdometerLastValue") or a.get("mileage"),
+                        "ano": spec.get("ModelYear") or a.get("year"),
+                        "versao": spec.get("Version") or a.get("version", "EXL"),
+                        "cambio": spec.get("GearShift") or a.get("transmission"),
+                        "cor": spec.get("Color") or a.get("color"),
+                        "cidade": a.get("Seller",{}).get("City","") or a.get("city",""),
+                        "estado": "SP", "descricao": "",
+                        "link": f"https://www.webmotors.com.br/carros/anuncio/{uid}",
+                    })
+            break
         for a in anuncios:
-            spec = a.get("Specification",{})
-            prices = a.get("Prices",{})
+            spec = a.get("Specification", {})
+            prices = a.get("Prices", {})
             preco = prices.get("Price") or prices.get("PriceValue")
             if preco and preco > PRECO_MAX_BUSCA: continue
-            titulo = f"{spec.get('Make','')} {spec.get('Model','')} {spec.get('Version','')} {spec.get('ModelYear','')}".strip()
+            titulo = (f"{spec.get('Make','')} {spec.get('Model','')} "
+                      f"{spec.get('Version','')} {spec.get('ModelYear','')}".strip())
             resultados.append({
-                "fonte":"WebMotors","titulo":titulo,"preco":preco,
-                "km":spec.get("OdometerLastValue"),
-                "ano":spec.get("ModelYear") or spec.get("YearFabrication"),
-                "versao":spec.get("Version"),"cambio":spec.get("GearShift"),"cor":spec.get("Color"),
-                "cidade":a.get("Seller",{}).get("City",""),"estado":a.get("Seller",{}).get("State",""),
-                "descricao":"",
-                "link":f"https://www.webmotors.com.br/carros/anuncio/{a.get('UniqueId','')}",
+                "fonte": "WebMotors", "titulo": titulo, "preco": preco,
+                "km": spec.get("OdometerLastValue"),
+                "ano": spec.get("ModelYear") or spec.get("YearFabrication"),
+                "versao": spec.get("Version"), "cambio": spec.get("GearShift"),
+                "cor": spec.get("Color"),
+                "cidade": a.get("Seller",{}).get("City",""),
+                "estado": a.get("Seller",{}).get("State",""),
+                "descricao": "",
+                "link": f"https://www.webmotors.com.br/carros/anuncio/{a.get('UniqueId','')}",
             })
         if len(anuncios) < 24: break
         time.sleep(0.6)
@@ -1002,12 +1051,9 @@ def main():
         if scam or alerta_preco == "scam":
             motivos["suspeito"] += 1; continue
         preco = item.get("preco")
-        if preco and preco > PRECO_PERFEITO:
+        if preco and preco > PRECO_MAX_BUSCA:
             motivos["preco"] += 1; continue
         item["_score"] = score_listing(item, fipe_ref)
-        if preco and preco > PRECO_NORMAL_MAX:
-            if item["_score"] < SCORE_PERFEITO:
-                motivos["preco"] += 1; continue
         item["_alerta_preco"] = alerta_preco == "alerta"
         (alertas if alerta_preco == "alerta" else validos).append(item)
 
