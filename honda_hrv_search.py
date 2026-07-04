@@ -18,8 +18,11 @@ from datetime import datetime
 # ══════════════════════════════════════════════════════════════════════════════
 ANO_ALVO         = 2017
 VERSAO_ALVO      = "EXL"
-PRECO_MAX_BUSCA  = 95_000
-PRECO_FIPE_REF   = 80_000
+PRECO_MAX_BUSCA  = 90_000    # teto de busca
+PRECO_NORMAL_MAX = 87_000    # preço máximo padrão
+PRECO_PERFEITO   = 90_000    # até 90k aceito SE score >= SCORE_PERFEITO
+SCORE_PERFEITO   = 75        # score mínimo para aceitar preço entre 87k e 90k
+PRECO_FIPE_REF   = 83_000    # referência FIPE 2017 EXL (~2026)
 KM_EXCELENTE     = 70_000
 KM_LIMITE_ALERTA = 160_000
 
@@ -158,6 +161,52 @@ def extrair_next_data(html: str) -> dict:
         except: pass
     return {}
 
+def extrair_json_embutido(html: str, variaveis: list[str]) -> dict:
+    """Extrai JSON de variáveis JS embutidas no HTML (ex: window.__STATE__ = {...})."""
+    for var in variaveis:
+        pat = rf'{re.escape(var)}\s*=\s*(\{{.*?\}});?\s*(?:\n|</script>)'
+        m = re.search(pat, html, re.DOTALL)
+        if m:
+            try: return json.loads(m.group(1))
+            except: pass
+    return {}
+
+# Sessions com cookies por site (inicializadas em main)
+_sessions: dict[str, requests.Session] = {}
+
+def get_session(dominio: str, homepage: str) -> requests.Session:
+    """Retorna session com cookies obtidos visitando a homepage do site."""
+    if dominio not in _sessions:
+        s = requests.Session()
+        s.headers.update(HEADERS)
+        try:
+            s.get(homepage, timeout=15)
+            time.sleep(0.5)
+        except Exception:
+            pass
+        _sessions[dominio] = s
+    return _sessions[dominio]
+
+def fazer_get(url, params=None, headers=None, timeout=20, dominio=None, homepage=None):
+    """GET com session (cookies), retry e headers de browser."""
+    if dominio and homepage:
+        s = get_session(dominio, homepage)
+    else:
+        s = requests.Session()
+        s.headers.update(HEADERS)
+    if headers:
+        s.headers.update(headers)
+    for tentativa in range(3):
+        try:
+            r = s.get(url, params=params, timeout=timeout)
+            if r.status_code == 200:
+                return r
+            if r.status_code in (403, 429):
+                time.sleep(2 + tentativa * 2)
+        except Exception:
+            time.sleep(1 + tentativa)
+    return None
+
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  SCORING
@@ -245,20 +294,6 @@ def buscar_preco_fipe() -> float:
 #  SCRAPERS
 # ══════════════════════════════════════════════════════════════════════════════
 
-def fazer_get(url, params=None, headers=None, timeout=20):
-    """GET com retry e headers de browser."""
-    h = {**HEADERS_JSON, **(headers or {})}
-    for tentativa in range(3):
-        try:
-            r = requests.get(url, params=params, headers=h, timeout=timeout)
-            if r.status_code == 200:
-                return r
-            time.sleep(1 + tentativa)
-        except Exception:
-            time.sleep(1 + tentativa)
-    return None
-
-
 def buscar_mercadolivre() -> list[dict]:
     """Site 1 — Mercado Livre"""
     print("  [1] Mercado Livre...")
@@ -270,7 +305,8 @@ def buscar_mercadolivre() -> list[dict]:
         r = fazer_get("https://api.mercadolibre.com/sites/MLB/search",
                       params={"q":f"Honda HR-V EXL {ANO_ALVO}","category":"MLB1744",
                               "price_to":PRECO_MAX_BUSCA,"offset":offset,"limit":50},
-                      headers=h)
+                      headers=h,
+                      dominio="mercadolivre.com.br", homepage="https://www.mercadolivre.com.br/")
         if not r: break
         try: data = r.json()
         except: break
@@ -311,7 +347,8 @@ def buscar_webmotors() -> list[dict]:
         r = fazer_get("https://www.webmotors.com.br/api/search/car",
                       params={"url":f"{base}&Pag={page}","actualPage":page,
                               "displayPerPage":24,"order":1,"showMenu":"true","listFilters":"true"},
-                      headers=h)
+                      headers=h,
+                      dominio="webmotors.com.br", homepage="https://www.webmotors.com.br/")
         if not r: break
         try: data = r.json()
         except: break
@@ -349,7 +386,8 @@ def buscar_olx() -> list[dict]:
             r = fazer_get(
                 f"https://www.olx.com.br/autos-e-pecas/carros-vans-e-utilitarios/honda",
                 params={"q":f"hr-v exl {ANO_ALVO}","pe":PRECO_MAX_BUSCA,"re":"sao_paulo","o":page},
-                headers=h)
+                headers=h,
+                dominio="olx.com.br", homepage="https://www.olx.com.br/")
             if not r: break
             soup = BeautifulSoup(r.text, "lxml")
 
@@ -409,7 +447,8 @@ def buscar_icarros() -> list[dict]:
             r = fazer_get("https://www.icarros.com.br/ache/listaanuncios.jsp",
                           params={"pag":page,"ord":2,"modelo":5,"marca":21,
                                   "anoFabricacaoDe":ANO_ALVO,"anoFabricacaoAte":ANO_ALVO,
-                                  "priceMax":PRECO_MAX_BUSCA})
+                                  "priceMax":PRECO_MAX_BUSCA},
+                          dominio="icarros.com.br", homepage="https://www.icarros.com.br/")
             if not r: break
             soup = BeautifulSoup(r.text, "lxml")
             cards = (soup.select("li.ads__list__item")
@@ -448,7 +487,8 @@ def buscar_kavak() -> list[dict]:
     try:
         from bs4 import BeautifulSoup
         r = fazer_get(f"https://www.kavak.com/br/pesquisa/honda/hr-v",
-                      params={"year":ANO_ALVO,"price_max":PRECO_MAX_BUSCA,"hub":"sao-paulo"})
+                      params={"year":ANO_ALVO,"price_max":PRECO_MAX_BUSCA,"hub":"sao-paulo"},
+                      dominio="kavak.com", homepage="https://www.kavak.com/br/")
         if r:
             nd = extrair_next_data(r.text)
             # Tenta várias estruturas possíveis do Next.js
@@ -483,7 +523,8 @@ def buscar_mobiauto() -> list[dict]:
     try:
         from bs4 import BeautifulSoup
         r = fazer_get("https://www.mobiauto.com.br/estoque/honda/hr-v/exl",
-                      params={"yearFrom":ANO_ALVO,"yearTo":ANO_ALVO,"state":"SP"})
+                      params={"yearFrom":ANO_ALVO,"yearTo":ANO_ALVO,"state":"SP"},
+                      dominio="mobiauto.com.br", homepage="https://www.mobiauto.com.br/")
         if r:
             nd = extrair_next_data(r.text)
             ads = (nd.get("props",{}).get("pageProps",{}).get("ads")
@@ -533,7 +574,8 @@ def buscar_vrum() -> list[dict]:
     try:
         from bs4 import BeautifulSoup
         r = fazer_get("https://www.vrum.com.br/carros-usados/honda/hr-v",
-                      params={"year":ANO_ALVO,"state":"SP","trim":"EXL"})
+                      params={"year":ANO_ALVO,"state":"SP","trim":"EXL"},
+                      dominio="vrum.com.br", homepage="https://www.vrum.com.br/")
         if r:
             nd = extrair_next_data(r.text)
             ads = (nd.get("props",{}).get("pageProps",{}).get("vehicles")
@@ -562,7 +604,8 @@ def buscar_autoline() -> list[dict]:
     try:
         from bs4 import BeautifulSoup
         r = fazer_get("https://www.autoline.com.br/carros/honda/hr+v/",
-                      params={"year0":ANO_ALVO,"year1":ANO_ALVO,"state":"SP"})
+                      params={"year0":ANO_ALVO,"year1":ANO_ALVO,"state":"SP"},
+                      dominio="autoline.com.br", homepage="https://www.autoline.com.br/")
         if r:
             soup = BeautifulSoup(r.text, "lxml")
             nd = extrair_next_data(r.text)
@@ -609,7 +652,8 @@ def buscar_localiza_seminovos() -> list[dict]:
         from bs4 import BeautifulSoup
         r = fazer_get("https://seminovos.localiza.com/carros",
                       params={"marca":"honda","modelo":"hr-v","versao":"exl",
-                              "anoInicio":ANO_ALVO,"anoFim":ANO_ALVO})
+                              "anoInicio":ANO_ALVO,"anoFim":ANO_ALVO},
+                      dominio="localiza.com", homepage="https://seminovos.localiza.com/")
         if r:
             nd = extrair_next_data(r.text)
             cars = (nd.get("props",{}).get("pageProps",{}).get("cars")
@@ -667,7 +711,8 @@ def buscar_movida_seminovos() -> list[dict]:
     try:
         from bs4 import BeautifulSoup
         r = fazer_get("https://www.movida.com.br/seminovos",
-                      params={"marca":"Honda","modelo":"HR-V","anoMin":ANO_ALVO,"anoMax":ANO_ALVO})
+                      params={"marca":"Honda","modelo":"HR-V","anoMin":ANO_ALVO,"anoMax":ANO_ALVO},
+                      dominio="movida.com.br", homepage="https://www.movida.com.br/")
         if r:
             nd = extrair_next_data(r.text)
             cars = (nd.get("props",{}).get("pageProps",{}).get("vehicles")
@@ -720,7 +765,8 @@ def buscar_honda_seminovos() -> list[dict]:
         from bs4 import BeautifulSoup
         r = fazer_get("https://www.honda.com.br/automoveis/seminovos/estoque",
                       params={"modelo":"HR-V","versao":"EXL","anoMin":ANO_ALVO,
-                              "anoMax":ANO_ALVO,"precoMax":PRECO_MAX_BUSCA,"estado":"SP"})
+                              "anoMax":ANO_ALVO,"precoMax":PRECO_MAX_BUSCA,"estado":"SP"},
+                      dominio="honda.com.br", homepage="https://www.honda.com.br/")
         if r:
             soup = BeautifulSoup(r.text, "lxml")
             nd = extrair_next_data(r.text)
@@ -769,7 +815,8 @@ def buscar_autoshow() -> list[dict]:
     try:
         from bs4 import BeautifulSoup
         r = fazer_get("https://www.autoshow.com.br/estoque",
-                      params={"marca":"honda","modelo":"hr-v","ano":ANO_ALVO,"versao":"exl"})
+                      params={"marca":"honda","modelo":"hr-v","ano":ANO_ALVO,"versao":"exl"},
+                      dominio="autoshow.com.br", homepage="https://www.autoshow.com.br/")
         if r:
             nd = extrair_next_data(r.text)
             cars = (nd.get("props",{}).get("pageProps",{}).get("cars")
@@ -937,7 +984,7 @@ def main():
             unicos.append(item)
 
     total_bruto = len(unicos)
-    motivos = {"versao":0,"ano":0,"cor":0,"cidade":0,"suspeito":0}
+    motivos = {"versao":0,"ano":0,"cor":0,"cidade":0,"suspeito":0,"preco":0}
     validos, alertas = [], []
 
     for item in unicos:
@@ -954,7 +1001,13 @@ def main():
         alerta_preco = preco_suspeito(item.get("preco"), fipe_ref)
         if scam or alerta_preco == "scam":
             motivos["suspeito"] += 1; continue
+        preco = item.get("preco")
+        if preco and preco > PRECO_PERFEITO:
+            motivos["preco"] += 1; continue
         item["_score"] = score_listing(item, fipe_ref)
+        if preco and preco > PRECO_NORMAL_MAX:
+            if item["_score"] < SCORE_PERFEITO:
+                motivos["preco"] += 1; continue
         item["_alerta_preco"] = alerta_preco == "alerta"
         (alertas if alerta_preco == "alerta" else validos).append(item)
 
