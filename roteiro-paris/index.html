@@ -206,6 +206,8 @@ footer{color:var(--muted);font-size:12px;margin-top:28px;text-align:center}
     </div>
     <span class="hint-ext" id="extHint"></span>
     <span style="flex:1"></span>
+    <span class="chip ok" id="syncChip" hidden></span>
+    <button class="btn" id="syncBtn" type="button" hidden>Sincronizar entre aparelhos</button>
     <button class="btn" id="shareBtn" type="button">Copiar link com meu plano</button>
     <button class="btn" id="resetBtn" type="button">Restaurar padrão</button>
   </div>
@@ -217,7 +219,8 @@ footer{color:var(--muted);font-size:12px;margin-top:28px;text-align:center}
 
 <footer>
   Feito a partir da planilha “Roteiro Paris Setembro 2026”. Suas alterações ficam salvas neste aparelho;
-  use “Copiar link” para enviar o plano exato a outra pessoa.
+  use “Copiar link” para enviar o plano a outra pessoa. Com a sincronização ligada, todos os aparelhos
+  com o código da viagem editam o mesmo plano em tempo real.
 </footer>
 </div>
 <div class="toast" id="toast" role="status"></div>
@@ -534,6 +537,70 @@ const EVITAR = [
  ]}
 ];
 
+/* ================= SINCRONIZAÇÃO ENTRE APARELHOS (Firebase) =================
+   Para ligar a sincronização em tempo real, cole abaixo o objeto de
+   configuração do seu projeto Firebase (Console → Configurações do projeto →
+   Seus apps → Config). Enquanto FIREBASE_CONFIG for null, o app funciona
+   normalmente, mas salvando só neste aparelho.
+
+   No banco (Realtime Database), use estas regras para permitir os planos:
+   { "rules": { "planos": { ".read": true, ".write": true } } }
+   O código da viagem funciona como senha — escolham um difícil de adivinhar. */
+const FIREBASE_CONFIG = null;
+/* exemplo:
+const FIREBASE_CONFIG = {
+  apiKey: "...", authDomain: "xxx.firebaseapp.com",
+  databaseURL: "https://xxx-default-rtdb.firebaseio.com",
+  projectId: "xxx", appId: "..."
+};
+*/
+
+const SYNC_KEY = "roteiro-paris-2026-sync-code";
+const CLIENT_ID = Math.random().toString(36).slice(2) + Date.now().toString(36);
+const sync = { code: null, ref: null, setFn: null, ready: false };
+let syncPushTimer;
+
+async function connectSync(){
+  if(!FIREBASE_CONFIG || !sync.code || sync.ready) return;
+  try{
+    const [{initializeApp}, {getDatabase, ref, onValue, set}] = await Promise.all([
+      import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"),
+      import("https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js")
+    ]);
+    const db = getDatabase(initializeApp(FIREBASE_CONFIG));
+    sync.ref = ref(db, "planos/" + sync.code);
+    sync.setFn = set;
+    let first = true;
+    onValue(sync.ref, snap => {
+      const data = snap.val();
+      if(!data){ sync.ready = true; pushSync(); return; }   // primeiro aparelho no código: sobe o plano local
+      sync.ready = true;
+      if(data.by === CLIENT_ID) return;                     // eco da nossa própria gravação
+      applyParsed(data.state || {});
+      try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
+      render();
+      if(!first) showToast("Plano atualizado por outro aparelho");
+      first = false;
+    }, err => { showToast("Sincronização indisponível: " + err.code); });
+  }catch(e){
+    showToast("Não consegui conectar à sincronização (sem internet?)");
+  }
+}
+function pushSync(){
+  if(!sync.ready || !sync.ref || !sync.setFn) return;
+  clearTimeout(syncPushTimer);
+  syncPushTimer = setTimeout(() => {
+    sync.setFn(sync.ref, { by: CLIENT_ID, at: Date.now(), state }).catch(()=>{});
+  }, 400);
+}
+function renderSyncUI(){
+  const btn = $("#syncBtn"), chip = $("#syncChip");
+  if(!FIREBASE_CONFIG){ btn.hidden = true; chip.hidden = true; return; }
+  btn.hidden = !!sync.code;
+  chip.hidden = !sync.code;
+  if(sync.code) chip.textContent = "✓ Sincronizado · viagem: " + sync.code;
+}
+
 /* ================= ESTADO ================= */
 const STORAGE_KEY = "roteiro-paris-2026-v1";
 const DEFAULT_STATE = () => ({
@@ -544,15 +611,27 @@ const DEFAULT_STATE = () => ({
 });
 let state = DEFAULT_STATE();
 
+function applyParsed(parsed){
+  state = Object.assign(DEFAULT_STATE(), parsed);
+  state.budget = Object.assign(DEFAULT_STATE().budget, parsed.budget||{});
+  state.sel = Object.assign(DEFAULT_STATE().sel, parsed.sel||{});
+  state.checks = parsed.checks || {};
+}
 function loadState(){
+  // código de viagem sincronizada no link (#viagem=...) ou salvo neste aparelho
+  const v = location.hash.match(/#viagem=([\w-]{3,40})/);
+  if(v){
+    sync.code = v[1];
+    try{ localStorage.setItem(SYNC_KEY, sync.code); }catch(e){}
+    history.replaceState(null,"",location.pathname+location.search);
+  }else{
+    try{ sync.code = localStorage.getItem(SYNC_KEY) || null; }catch(e){}
+  }
   // 1) estado embutido no link compartilhado; 2) localStorage; 3) padrão
   try{
     const h = location.hash.match(/#plano=([A-Za-z0-9+/=_-]+)/);
     if(h){
-      const parsed = JSON.parse(decodeURIComponent(escape(atob(h[1].replace(/-/g,"+").replace(/_/g,"/")))));
-      state = Object.assign(DEFAULT_STATE(), parsed);
-      state.budget = Object.assign(DEFAULT_STATE().budget, parsed.budget||{});
-      state.sel = Object.assign(DEFAULT_STATE().sel, parsed.sel||{});
+      applyParsed(JSON.parse(decodeURIComponent(escape(atob(h[1].replace(/-/g,"+").replace(/_/g,"/"))))));
       saveState();
       history.replaceState(null,"",location.pathname+location.search);
       showToast("Plano carregado a partir do link");
@@ -561,15 +640,13 @@ function loadState(){
   }catch(e){}
   try{
     const raw = localStorage.getItem(STORAGE_KEY);
-    if(raw){
-      const parsed = JSON.parse(raw);
-      state = Object.assign(DEFAULT_STATE(), parsed);
-      state.budget = Object.assign(DEFAULT_STATE().budget, parsed.budget||{});
-      state.sel = Object.assign(DEFAULT_STATE().sel, parsed.sel||{});
-    }
+    if(raw) applyParsed(JSON.parse(raw));
   }catch(e){}
 }
-function saveState(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){} }
+function saveState(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
+  pushSync();
+}
 
 /* ================= CÁLCULO (as "fórmulas" da planilha) ================= */
 function calcBudget(){
@@ -827,6 +904,7 @@ const VIEWS = {resumo:viewResumo, roteiro:viewRoteiro, selecao:viewSelecao, orca
 
 function render(){
   renderHeader();
+  renderSyncUI();
   renderTabs();
   $("#content").innerHTML = VIEWS[activeTab]();
 }
@@ -859,12 +937,32 @@ document.addEventListener("click", e => {
     return;
   }
   if(e.target.id === "shareBtn"){
-    const payload = btoa(unescape(encodeURIComponent(JSON.stringify(state)))).replace(/\+/g,"-").replace(/\//g,"_");
-    const url = location.origin + location.pathname + location.search + "#plano=" + payload;
+    let url, msg;
+    if(FIREBASE_CONFIG && sync.code){
+      url = location.origin + location.pathname + location.search + "#viagem=" + sync.code;
+      msg = "Link copiado! Quem abrir entra no MESMO plano, sincronizado em tempo real.";
+    }else{
+      const payload = btoa(unescape(encodeURIComponent(JSON.stringify(state)))).replace(/\+/g,"-").replace(/\//g,"_");
+      url = location.origin + location.pathname + location.search + "#plano=" + payload;
+      msg = "Link copiado! Quem abrir vê exatamente o seu plano.";
+    }
     (navigator.clipboard? navigator.clipboard.writeText(url) : Promise.reject()).then(
-      ()=> showToast("Link copiado! Quem abrir vê exatamente o seu plano."),
+      ()=> showToast(msg),
       ()=> { prompt("Copie o link:", url); }
     );
+    return;
+  }
+  if(e.target.id === "syncBtn"){
+    const sug = "paris-" + Math.random().toString(36).slice(2,8);
+    const code = prompt("Escolha um código para a viagem (funciona como senha — quem tiver o código edita o plano):", sug);
+    if(!code) return;
+    const clean = code.trim().toLowerCase().replace(/[^\w-]+/g,"-").replace(/^-+|-+$/g,"").slice(0,40);
+    if(clean.length < 3){ showToast("Código muito curto — use pelo menos 3 caracteres"); return; }
+    sync.code = clean;
+    try{ localStorage.setItem(SYNC_KEY, clean); }catch(err){}
+    renderSyncUI();
+    connectSync();
+    showToast("Sincronização ligada! Use 'Copiar link' para chamar o outro aparelho.");
     return;
   }
   if(e.target.id === "resetBtn"){
@@ -891,6 +989,7 @@ document.addEventListener("change", e => {
 
 loadState();
 render();
+connectSync();
 </script>
 </body>
 </html>
