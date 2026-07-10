@@ -191,7 +191,7 @@ footer{color:var(--muted);font-size:12px;margin-top:28px;text-align:center}
   <div class="hero-top">
     <div>
       <h1 class="serif">Paris, <em>setembro de 2026</em></h1>
-      <p class="sub" id="subline">10 dias · casal · sem subir a Torre Eiffel · sem Catacumbas</p>
+      <p class="sub" id="subline">11–18/09/2026 · casal · sem subir a Torre Eiffel · sem Catacumbas</p>
     </div>
     <div class="totalpill">
       <div class="lbl">Orçamento do casal (sem aéreo)</div>
@@ -200,11 +200,6 @@ footer{color:var(--muted);font-size:12px;margin-top:28px;text-align:center}
     </div>
   </div>
   <div class="controls">
-    <div class="seg" role="group" aria-label="Cenário da viagem">
-      <button id="seg10" type="button">10 dias</button>
-      <button id="seg12" type="button">12 dias</button>
-    </div>
-    <span class="hint-ext" id="extHint"></span>
     <span style="flex:1"></span>
     <span class="chip ok" id="syncChip" hidden></span>
     <button class="btn" id="syncBtn" type="button" hidden>Sincronizar entre aparelhos</button>
@@ -244,25 +239,15 @@ const SEL_ITEMS = [
  {id:"perelachaise",n:"Père-Lachaise (cemitério)",t:"Passeio",d:"D6 ter 15",p:0,pr:"Recomendado",cut:"Trocar por Jardin du Luxembourg"},
  {id:"belleville",n:"Belleville (street art + vista)",t:"Bairro",d:"D6 ter 15",p:0,pr:"Opcional",cut:"Voltar mais cedo e descansar"},
  {id:"versalhes",n:"Versalhes (palácio + jardins)",t:"Bate-volta",d:"D7 qua 16",p:70,pr:"Imperdível",cut:"Substituto: Fontainebleau (mais vazio, também no Navigo)"},
- {id:"louvre",n:"Louvre (manhã focada)",t:"Museu",d:"D8 qui 17",p:64,pr:"Recomendado",cut:"Vocês marcaram 'talvez'. Substituto: Musée Rodin (€28 casal, jardins) ou Orsay com mais calma"},
+ {id:"louvre",n:"Louvre (manhã focada)",t:"Museu",d:"D8 qui 17",p:64,pr:"Recomendado",cut:"Vocês marcaram 'talvez'. Substituto: Musée Rodin (€28 casal, jardins)"},
  {id:"tuileries",n:"Tuileries + Palais Royal",t:"Passeio",d:"D8 qui 17",p:0,pr:"Recomendado",cut:"Emenda natural do Louvre — cortar junto"},
  {id:"lafayette",n:"Galeries Lafayette (terraço grátis)",t:"Mirante",d:"D8 qui 17",p:0,pr:"Opcional",cut:"Pular sem dó se cansados"},
  {id:"cruzeiro",n:"Cruzeiro no Sena ao entardecer",t:"Passeio",d:"D8 qui 17 noite",p:30,pr:"Recomendado",cut:"Ver a torre piscar do Champ de Mars (grátis)"},
- {id:"orsay",n:"Musée d'Orsay (impressionistas)",t:"Museu",d:"D9 sex 18",p:32,pr:"Recomendado",cut:"Se cortar Louvre, Orsay vira Imperdível (é mais 'fácil' de visitar)"},
- {id:"orangerie",n:"Orangerie (Ninfeias de Monet)",t:"Museu",d:"D9 sex 18",p:26,pr:"Opcional",cut:"Combo com Orsay sai €48 casal (economiza €10)"},
- {id:"stgermain",n:"Saint-Germain-des-Prés",t:"Bairro",d:"D9 sex 18",p:0,pr:"Recomendado",cut:"—"},
- {id:"paulbert",n:"Jantar especial Bistrot Paul Bert",t:"Comer bem",d:"D9 sex 18",p:110,pr:"Recomendado",cut:"Trocar por Chez Janou (€80 casal) ou mais um bouillon (€45)"},
- {id:"comprasfinais",n:"Compras finais (City Pharma, Monoprix)",t:"Compras",d:"D10 sáb 19",p:0,pr:"Opcional",cut:"—"},
- {id:"giverny",n:"Giverny — jardins de Monet",t:"Bate-volta",d:"D10* sáb 19",p:84,pr:"Só se 12 dias",sc:"ext",cut:"Setembro ainda é época boa. Alternativa: Provins (medieval, INCLUSO no Navigo se cair até dom 20)"},
- {id:"journees",n:"Journées du Patrimoine (monumentos grátis)",t:"Evento",d:"D10*–D11* 19–20",p:0,pr:"Só se 12 dias",sc:"ext",cut:"Confirmar programação oficial ~ago/2026"},
- {id:"puces",n:"Marché aux Puces de Saint-Ouen",t:"Compras",d:"D11* dom 20",p:0,pr:"Só se 12 dias",sc:"ext",cut:"Maior mercado de pulgas do mundo (abre sáb–seg)"},
- {id:"flv",n:"Fondation Louis Vuitton",t:"Museu",d:"D11* dom 20",p:36,pr:"Só se 12 dias",sc:"ext",cut:"Prédio do Frank Gehry + exposições. Opcional"},
  {id:"pantheon",n:"Panthéon",t:"Monumento",d:"—",p:26,pr:"Reserva (chuva)",off:true,cut:"Curinga para dia de chuva no Quartier Latin"},
- {id:"rodin",n:"Musée Rodin",t:"Museu",d:"—",p:28,pr:"Reserva (chuva)",off:true,cut:"Curinga: jardins + O Pensador, perto do Orsay"},
- {id:"disney",n:"Disneyland Paris",t:"Parque",d:"—",p:130,pr:"Reserva",off:true,cut:"1 dia inteiro (RER A ~45min, fora do circuito). Só no cenário 12 dias trocando Giverny+Puces"}
+ {id:"rodin",n:"Musée Rodin",t:"Museu",d:"—",p:28,pr:"Reserva (chuva)",off:true,cut:"Curinga: jardins + O Pensador"}
 ];
 // itens tratados em linhas próprias do orçamento (não entram na soma "Atrações")
-const BUDGET_OWN_LINE = new Set(["cruzeiro","paulbert","giverny","flv"]);
+const BUDGET_OWN_LINE = new Set(["cruzeiro"]);
 
 const DAYS = [
  {id:"d1",num:"D1",date:"Qui 10/09",title:"Voo São Paulo → Paris",sub:"Voo noturno ~12h",
@@ -366,67 +351,19 @@ const DAYS = [
    {t:"19h–20h",w:"CRUZEIRO NO SENA ao entardecer (Vedettes du Pont Neuf, comprar online)",m:"barco",tp:"destaque",c:30,sel:"cruzeiro"},
    {t:"20h–21h",w:"Jantar perto: Pink Mamma (se reservou) ou bouillon",m:"Pigalle (2/12)",tp:"refeição",c:50}
   ]},
- {id:"d9",num:"D9",date:"Sex 18/09",title:"Orsay + Orangerie + Saint-Germain",sub:"+ jantar especial",
-  logic:"Sexta fecha o circuito de museus na margem esquerda: Orsay → Orangerie → St-Germain, tudo a pé em linha reta pelo Sena. Jantar especial na sexta = clima de celebração sem a lotação do sábado.",
+ {id:"d9",num:"D9",date:"Sex 18/09",title:"Voo de volta",sub:"Saída de madrugada — sem passeio",
+  logic:"Voo CDG → GRU 08:15 (KLM, conexão em Amsterdã, nº 2006/791). Sair do hotel ~5h com as malas prontas da véspera. Dia 18 é só a volta, sem roteiro.",
   slots:[
-   {t:"9h–9h30",w:"Café + metrô ao Orsay (chegar p/ abertura 9h30)",m:"Solférino (12)",tp:"desloc"},
-   {t:"9h30–12h30",w:"MUSÉE D'ORSAY: 5º andar (Monet, Van Gogh, Renoir) PRIMEIRO, depois descer",m:"museu",tp:"destaque",c:32,sel:"orsay"},
-   {t:"12h30–13h45",w:"Almoço: Café Varenne ou rue Cler",m:"a pé",tp:"refeição",c:30},
-   {t:"13h45–14h30",w:"Caminhada margem do Sena até a Orangerie",m:"a pé",tp:"desloc"},
-   {t:"14h30–16h",w:"ORANGERIE: Ninfeias de Monet (salas ovais) — combo c/ Orsay economiza €5 p/p",m:"museu",tp:"destaque",c:26,sel:"orangerie"},
-   {t:"16h–19h",w:"SAINT-GERMAIN-DES-PRÉS: livrarias, Café de Flore por fora, Pont des Arts ao pôr do sol",m:"a pé",tp:"livre",sel:"stgermain"},
-   {t:"19h–20h15",w:"Voltar, banho, arrumar p/ jantar especial",m:"hotel",tp:"livre"},
-   {t:"20h30–22h30",w:"JANTAR ESPECIAL: Bistrot Paul Bert (steak au poivre — reservar semanas antes)",m:"Faidherbe-Chaligny (8)",tp:"refeição",c:110,sel:"paulbert"}
-  ]},
- {id:"d10",num:"D10",date:"Sáb 19/09",title:"Compras finais + voo de volta",sub:"Cenário 10 dias",sc:"base",
-  logic:"Último dia leve e perto do hotel: nada com hora marcada antes de voo internacional. Malas prontas até 14h.",
-  slots:[
-   {t:"9h–10h30",w:"Compras: City Pharma (cosméticos baratos, rue du Four) — chegar na abertura, lota",m:"St-Sulpice (4)",tp:"livre",c:30,sel:"comprasfinais"},
-   {t:"10h30–12h",w:"Monoprix (presentes/chocolates) + última boulangerie",m:"a pé",tp:"livre",sel:"comprasfinais"},
-   {t:"12h–13h30",w:"Almoço de despedida: o favorito da viagem ou Breizh Café",m:"—",tp:"refeição",c:45},
-   {t:"13h30–15h",w:"Pegar malas no hotel, organizar",m:"hotel",tp:"livre"},
-   {t:"15h–16h",w:"RER B até o CDG (chegar 3h antes do voo internacional)",m:"RER B",tp:"desloc",c:28},
-   {t:"Noite",w:"VOO Paris → São Paulo",m:"CDG",tp:"desloc"}
-  ]},
- {id:"d10x",num:"D10*",date:"Sáb 19/09",title:"Giverny — jardins de Monet",sub:"Só no cenário 12 dias",sc:"ext",
-  logic:"EXTENSÃO: Giverny no sábado 19 aproveita os jardins de Monet ainda floridos em setembro. ATENÇÃO: 19–20/09 = provável fim de semana das Journées du Patrimoine — se preferirem, troquem Giverny por monumentos grátis normalmente fechados (Palácio do Eliseu, Senado).",
-  slots:[
-   {t:"8h30–9h20",w:"Trem Gare Saint-Lazare → Vernon (~50 min). FORA do Navigo — comprar no SNCF Connect",m:"trem SNCF",tp:"desloc",c:52,sel:"giverny"},
-   {t:"9h20–9h45",w:"Shuttle/bike Vernon → Giverny (€10 ida-volta)",m:"shuttle",tp:"desloc",sel:"giverny"},
-   {t:"9h45–13h",w:"CASA E JARDINS DE MONET: ponte japonesa, lago dos nenúfares, ateliê",m:"Giverny",tp:"destaque",c:32,sel:"giverny"},
-   {t:"13h–14h",w:"Almoço no vilarejo de Giverny",m:"—",tp:"refeição"},
-   {t:"14h–17h",w:"Vilarejo + volta a Paris (shuttle + trem)",m:"trem SNCF",tp:"desloc",sel:"giverny"},
-   {t:"17h–19h30",w:"Descanso",m:"hotel",tp:"livre"},
-   {t:"19h30–21h30",w:"Jantar: bar à vin ou bistrô do bairro",m:"—",tp:"refeição",c:40}
-  ]},
- {id:"d11x",num:"D11*",date:"Dom 20/09",title:"Marché aux Puces + Fondation Louis Vuitton",sub:"Só no cenário 12 dias",sc:"ext",
-  logic:"EXTENSÃO: Puces só abre sáb–seg, então o domingo extra é a única janela. Tarde: Fondation LV fica no caminho de volta. Último dia do Navigo Semaine — usar sem dó.",
-  slots:[
-   {t:"9h–9h30",w:"Metrô ao mercado de pulgas (Puces só abre sáb–seg!)",m:"Porte de Clignancourt (4)",tp:"desloc"},
-   {t:"9h30–13h",w:"MARCHÉ AUX PUCES DE SAINT-OUEN: Vernaison e Paul Bert Serpette (vintage de verdade). CUIDADO com bolsos no trajeto",m:"a pé",tp:"destaque",sel:"puces"},
-   {t:"13h–14h",w:"Almoço: Chez Louisette (dentro do Puces) ou volta ao centro",m:"—",tp:"refeição",c:40},
-   {t:"14h–15h",w:"Metrô + navette ao Bois de Boulogne",m:"Les Sablons (1)",tp:"desloc"},
-   {t:"15h–17h30",w:"FONDATION LOUIS VUITTON: prédio do Frank Gehry + exposições",m:"museu",tp:"destaque",c:36,sel:"flv"},
-   {t:"17h30–19h",w:"Voltar, descansar",m:"hotel",tp:"livre"},
-   {t:"19h–21h",w:"Jantar de despedida: Le Comptoir du Relais",m:"Odéon (4/10)",tp:"refeição",c:70}
-  ]},
- {id:"d12x",num:"D12*",date:"Seg 21/09",title:"Manhã livre + voo de volta",sub:"Só no cenário 12 dias",sc:"ext",
-  logic:"EXTENSÃO: segunda os grandes museus fecham (Orsay/Versalhes) — dia naturalmente 'fraco', ideal para ir embora sem sensação de perda. Navigo acabou domingo — usar avulsos.",
-  slots:[
-   {t:"9h–11h",w:"Manhã livre: o que ficou faltando, compras finais (City Pharma, Monoprix)",m:"avulsos",tp:"livre",c:40},
-   {t:"11h–12h30",w:"Café demorado + última caminhada favorita",m:"a pé",tp:"livre"},
-   {t:"12h30–13h30",w:"Almoço + pegar malas",m:"hotel",tp:"refeição"},
-   {t:"13h30–15h",w:"Organizar e sair",m:"hotel",tp:"livre"},
-   {t:"15h–16h",w:"RER B até o CDG (3h antes)",m:"RER B",tp:"desloc",c:28},
-   {t:"Noite",w:"VOO Paris → São Paulo (chegada ter 22/09)",m:"CDG",tp:"desloc"}
+   {t:"~5h",w:"Sair do hotel com as malas (feitas na véspera) — RER B/táxi ao CDG, chegar ~3h antes",m:"CDG",tp:"desloc",c:28},
+   {t:"8h15",w:"Decolagem CDG → GRU (KLM, conexão em Amsterdã). Chegada a São Paulo 19:50",m:"Voo KLM",tp:"desloc"}
   ]}
 ];
 
 const RESUMO = [
- ["Duração","10 dias: saída de São Paulo (GRU) qui 10/09/2026 à noite, voo ~12h, chegada Paris sex 11/09 de manhã, volta sáb 19/09 à noite. Cenário 12 dias: volta seg 21/09 — dias extras marcados em laranja no Roteiro."],
+ ["Duração","Saída GRU qui 10/09/2026 19:35 (Air France 459), chegada Paris sex 11/09 11:55. Volta CDG→GRU sex 18/09 08:15 (KLM, conexão em Amsterdã). 7 dias inteiros em Paris (11 a 17/09); dia 18 é só a volta."],
  ["Perfil","Casal · sem subir a Torre Eiffel · sem Catacumbas"],
  ["Obrigatórios","Arco do Triunfo, Louvre (opcional mas recomendado), brechós confiáveis, restaurantes baratos onde locais comem"],
- ["Bate-voltas","Versalhes (qua 16/09, incluso no passe de transporte). Se ficar 12 dias: Giverny (Monet) e Marché aux Puces entram nos dias extras"],
+ ["Bate-voltas","Versalhes (qua 16/09, incluso no passe de transporte)"],
  ["Estratégia de transporte","Sex 11 a dom 13/09: tíquetes avulsos (€2,55) ou Navigo Dia. Seg 14/09: comprar NAVIGO SEMAINE (€32,40/pessoa) — vale seg 14 a dom 20/09, todas as zonas, COBRE o trem de Versalhes"],
  ["Cartão obrigatório","Navigo Easy (€2) ou app Île-de-France Mobilités no celular. Bilhete de papel DEIXOU DE EXISTIR em junho/2026 — não funciona mais."],
  ["Preço importante (2026)","Desde jan/2026 museus nacionais cobram tarifa maior para visitantes de fora da UE. Brasileiros pagam a tarifa cheia: Louvre €32, Versalhes €35."],
@@ -440,11 +377,9 @@ const RESERVAS = [
  {id:"rv-louvre",n:"Louvre — horário marcado OBRIGATÓRIO (online)"},
  {id:"rv-versalhes",n:"Versalhes — ingresso com horário (online)"},
  {id:"rv-sainte",n:"Sainte-Chapelle — reservar online"},
- {id:"rv-paulbert",n:"Bistrot Paul Bert — reservar por telefone com semanas de antecedência"},
  {id:"rv-janou",n:"Chez Janou — reservar"},
  {id:"rv-cruzeiro",n:"Cruzeiro Vedettes du Pont Neuf — comprar online (mais barato)"},
- {id:"rv-navigo",n:"Baixar app Île-de-France Mobilités + foto 3x4 p/ Navigo Découverte"},
- {id:"rv-giverny",n:"Trem p/ Giverny (SNCF Connect, antecedência = mais barato) — só se 12 dias",ext:true}
+ {id:"rv-navigo",n:"Baixar app Île-de-France Mobilités + foto 3x4 p/ Navigo Découverte"}
 ];
 
 const ATRACOES = [
@@ -452,8 +387,6 @@ const ATRACOES = [
  ["Arco do Triunfo","16","10h–22h30 (verão até 23h)","Aberto todo dia","Charles de Gaulle–Étoile (1/2/6, RER A)","1h","284 degraus, sem elevador comum. Melhor ao pôr do sol. Acesso SÓ pelo túnel subterrâneo"],
  ["Sainte-Chapelle","13","9h–17h (verão até 19h)","Aberto todo dia","Cité (4)","45 min","Vitrais. Ir em dia de sol, manhã. Combo com Conciergerie €20. Reservar online"],
  ["Notre-Dame","Grátis","8h–19h aprox.","Aberto todo dia","Cité (4)","1h","Reaberta. Entrada grátis mas reserve slot gratuito no app para furar fila"],
- ["Musée d'Orsay","16","9h30–18h (qui até 21h45)","Segunda","Solférino (12) / RER C","2–3h","Impressionistas. 5º andar é o ouro. Quinta à noite = vazio"],
- ["Musée de l'Orangerie","13","9h–18h","Terça","Concorde (1/8/12)","1–1h30","Ninfeias de Monet. Combo com Orsay €24 (economiza)"],
  ["Versalhes (Passeport)","35 (alta temp.)","Palácio 9h–18h30; jardins desde 8h","Segunda","RER C → Versailles Château Rive Gauche","Dia inteiro","Passeport = palácio + Trianon + jardins. Terça é o dia MAIS cheio. Dias de fonte musical (sáb/dom) jardins pagos ~€11"],
  ["Sacré-Cœur","Grátis (domo €8)","6h30–22h30","Aberto todo dia","Anvers (2) + funicular","1h","Ir antes das 10h. Cuidado com golpe da pulseirinha na escadaria"],
  ["Père-Lachaise","Grátis","8h–18h","Aberto todo dia","Père Lachaise (2/3)","1h30–2h","Pegue mapa na entrada ou app. Morrison, Wilde, Piaf, Chopin"],
@@ -607,7 +540,7 @@ const STORAGE_KEY = "roteiro-paris-2026-v1";
 const DEFAULT_STATE = () => ({
   ext: 0,
   sel: Object.fromEntries(SEL_ITEMS.map(i => [i.id, !i.off])),
-  budget: { hospUnit:140, alimUnit:75, jantUnit:60, jantQty:2, brechos:150, reserva:200 },
+  budget: { hospUnit:140, alimUnit:75, jantUnit:60, jantQty:1, brechos:150, reserva:200 },
   checks: {}
 });
 let state = DEFAULT_STATE();
@@ -651,35 +584,30 @@ function saveState(){
 
 /* ================= CÁLCULO (as "fórmulas" da planilha) ================= */
 function calcBudget(){
-  const ext = state.ext ? 1 : 0;
   const b = state.budget;
-  const nights = 8 + 2*ext;
-  const days   = 9 + 2*ext;
-  const tripDays = 10 + 2*ext;
+  const nights = 7;   // 11→18/09 (checkout manhã do 18)
+  const days   = 7;   // dias em Paris 11–17
+  const tripDays = 9; // 10→18/09
 
   let atracoes = 0;
   for(const it of SEL_ITEMS){
     if(BUDGET_OWN_LINE.has(it.id)) continue;
-    if(it.sc === "ext" && !ext) continue;
+    if(it.sc === "ext") continue;
     if(state.sel[it.id]) atracoes += it.p;
   }
   const linhas = [
     {n:"Hospedagem (quarto casal/noite)", unit:b.hospUnit, qtd:nights, edit:"hospUnit",
-     obs:`${nights} noites (${ext? "11→21/09, cenário 12 dias":"11→19/09"})`, total:b.hospUnit*nights},
+     obs:`${nights} noites (11→18/09)`, total:b.hospUnit*nights},
     {n:"Alimentação (casal/dia em Paris)", unit:b.alimUnit, qtd:days, edit:"alimUnit",
      obs:"Café boulangerie + almoço barato + jantar médio", total:b.alimUnit*days},
     {n:"Jantares especiais (extra s/ a média)", unit:b.jantUnit, qtd:b.jantQty, edit:"jantUnit", editQty:"jantQty",
-     obs:"Paul Bert (D9) + despedida", total:b.jantUnit*b.jantQty},
+     obs:"Ex.: Chez Janou. Ajuste a quantidade", total:b.jantUnit*b.jantQty},
     {n:"Atrações (casal)", total:atracoes, auto:true,
-     obs:"Soma automática do que está SIM na aba Seleção (cruzeiro, Giverny e Fond. LV têm linha própria)"},
+     obs:"Soma automática do que está SIM na aba Seleção (o cruzeiro tem linha própria)"},
     {n:"Cruzeiro Sena (casal)", total: state.sel.cruzeiro ? 30 : 0, auto:true,
      obs: state.sel.cruzeiro ? "Vedettes du Pont Neuf online" : "Cortado na Seleção — zera sozinho"},
-    {n:"Transporte urbano (casal)", total:175 + 15*ext, auto:true,
-     obs:"Aeroporto 56 + Navigo Easy/Découverte 14 + avulsos sex–dom ~40 + Navigo Semaine 65" + (ext? " + €15 de avulsos na seg 21":"")},
-    {n:"Giverny (casal: trem+shuttle+entrada)", total:(ext && state.sel.giverny) ? 124 : 0, auto:true,
-     obs: ext ? (state.sel.giverny? "Trem fora do Navigo":"Cortado na Seleção") : "Só no cenário 12 dias — zera sozinho"},
-    {n:"Fondation Louis Vuitton (casal)", total:(ext && state.sel.flv) ? 36 : 0, auto:true,
-     obs: ext ? (state.sel.flv? "Prédio do Gehry + expos":"Cortado na Seleção") : "Só no cenário 12 dias"},
+    {n:"Transporte urbano (casal)", total:175, auto:true,
+     obs:"Aeroporto 56 + Navigo Easy/Découverte 14 + avulsos sex–dom ~40 + Navigo Semaine 65"},
     {n:"Brechós / compras", unit:b.brechos, qtd:1, edit:"brechos", obs:"Ajuste ao apetite de garimpo", total:b.brechos},
     {n:"Reserva de emergência (~10%)", unit:b.reserva, qtd:1, edit:"reserva",
      obs:"Imprevistos, chuva, multa de quem não validou o bilhete :)", total:b.reserva}
@@ -710,12 +638,7 @@ function renderHeader(){
   const {total, perPessoa, tripDays} = calcBudget();
   $("#grandTotal").textContent = fmtEUR(total);
   $("#grandPer").textContent = `${fmtEUR(perPessoa)} por pessoa · ${fmtEUR(Math.round(total/tripDays))}/dia`;
-  $("#subline").textContent = `${tripDays} dias · casal · sem subir a Torre Eiffel · sem Catacumbas`;
-  $("#seg10").classList.toggle("on", !state.ext);
-  $("#seg12").classList.toggle("on", !!state.ext);
-  $("#extHint").textContent = state.ext
-    ? "Cenário 12 dias: Giverny, Puces e Fondation LV entram no plano e no orçamento."
-    : "Mude para 12 dias e os dias extras (laranja) entram no plano e no orçamento.";
+  $("#subline").textContent = `${tripDays} dias (10 a 18/09) · casal · sem subir a Torre Eiffel · sem Catacumbas`;
 }
 
 function renderTabs(){
@@ -733,7 +656,7 @@ function chipFor(pr){
 function viewResumo(){
   const cards = RESUMO.map(([k,v]) =>
     `<div class="card kv"><div class="k">${esc(k)}</div><div class="v">${esc(v)}</div></div>`).join("");
-  const checks = RESERVAS.filter(r => !r.ext || state.ext).map(r => {
+  const checks = RESERVAS.filter(r => !r.ext).map(r => {
     const done = !!state.checks[r.id];
     return `<div class="checkrow ${done?'done':''}">
       <input type="checkbox" id="${r.id}" data-check="${r.id}" ${done?'checked':''}>
@@ -749,7 +672,7 @@ function viewResumo(){
 }
 
 function viewRoteiro(){
-  const days = DAYS.filter(d => !d.sc || d.sc === (state.ext ? "ext" : "base"));
+  const days = DAYS;
   const html = days.map(d => {
     const cost = dayCost(d);
     const slots = d.slots.map(sl => {
@@ -767,7 +690,7 @@ function viewRoteiro(){
         </div>
       </div>`;
     }).join("");
-    return `<details class="day ${d.sc==='ext'?'extday':''}" ${d.id==='d2'?'open':''}>
+    return `<details class="day" ${d.id==='d2'?'open':''}>
       <summary>
         <span class="dnum serif">${esc(d.num)}</span>
         <span class="dtitle">${esc(d.title)}<small>${esc(d.date)} · ${esc(d.sub)}</small></span>
@@ -780,18 +703,16 @@ function viewRoteiro(){
   return `<section class="tab on">
     <h2>Roteiro dia a dia</h2>
     <p class="lead">Toque num dia para abrir o hora a hora. O custo do dia já desconta o que você cortou na aba Seleção.
-    ${state.ext ? "Dias com barra laranja são os extras do cenário 12 dias." : ""}</p>
+</p>
     ${html}
   </section>`;
 }
 
 function viewSelecao(){
   const rows = SEL_ITEMS.map(it => {
-    const extOnly = it.sc === "ext";
-    const disabled = extOnly && !state.ext;
     const on = !!state.sel[it.id];
-    return `<div class="selrow ${extOnly?'extonly':''} ${disabled?'disabled':''}">
-      <button type="button" class="simnao ${on?'sim':'nao'}" data-sel="${it.id}" ${disabled?'disabled':''}
+    return `<div class="selrow">
+      <button type="button" class="simnao ${on?'sim':'nao'}" data-sel="${it.id}"
         aria-pressed="${on}">${on?'SIM':'NÃO'}</button>
       <div class="selbody">
         <div class="selname ${on?'':'cut'}">${esc(it.n)}</div>
@@ -801,14 +722,14 @@ function viewSelecao(){
           ${chipFor(it.pr)}
           ${it.p?`<span class="price">€ ${it.p} casal</span>`:`<span class="price" style="color:var(--ok)">grátis</span>`}
         </div>
-        <div class="cutnote ${!on && it.cut!=="—" ? "show-sub":""}">${!on && it.cut!=="—" ? "No lugar: " : (it.cut!=="—" ? "Se cortar: " : "")}${esc(it.cut==="—"?"":it.cut)}${disabled?" (só existe no cenário 12 dias)":""}</div>
+        <div class="cutnote ${!on && it.cut!=="—" ? "show-sub":""}">${!on && it.cut!=="—" ? "No lugar: " : (it.cut!=="—" ? "Se cortar: " : "")}${esc(it.cut==="—"?"":it.cut)}</div>
       </div>
     </div>`;
   }).join("");
   return `<section class="tab on">
     <h2>Seleção de locais</h2>
     <p class="lead">Mude para NÃO o que quiser cortar — o roteiro risca a atividade, mostra o substituto sugerido e o orçamento recalcula na hora.
-    Os três últimos (Panthéon, Rodin, Disney) são curingas: mude para SIM para incluí-los na conta.</p>
+    Os dois últimos (Panthéon, Rodin) são curingas de dia de chuva: mude para SIM para incluí-los na conta.</p>
     <div class="card">${rows}</div>
   </section>`;
 }
@@ -929,12 +850,6 @@ document.addEventListener("click", e => {
     saveState(); render();
     const it = SEL_ITEMS.find(i=>i.id===id);
     showToast(state.sel[id] ? `${it.n} incluído — orçamento atualizado` : `${it.n} cortado — orçamento atualizado`);
-    return;
-  }
-  if(e.target.id === "seg10" || e.target.id === "seg12"){
-    state.ext = e.target.id === "seg12" ? 1 : 0;
-    saveState(); render();
-    showToast(state.ext ? "Cenário 12 dias: roteiro e orçamento recalculados" : "Cenário 10 dias: roteiro e orçamento recalculados");
     return;
   }
   if(e.target.id === "shareBtn"){
