@@ -1,0 +1,115 @@
+# Guia dos Apps — Di & Tati (leia isto primeiro)
+
+Este repositório hospeda **3 apps** do casal Di (Diogo) & Tati, publicados juntos no GitHub Pages.
+Este arquivo é o contexto completo para qualquer sessão nova do Claude: estrutura, Firebase,
+como atualizar cada app e como publicar. **Responda sempre em português (BR).**
+
+---
+
+## Visão geral da infraestrutura
+
+| Peça | O quê | Onde |
+|---|---|---|
+| **GitHub (código + site)** | Repositório `diogoribeir/Web-scraping-Sample`, branch principal `master` | https://github.com/diogoribeir/Web-scraping-Sample |
+| **Site (GitHub Pages)** | Publicado pelo workflow do Actions | https://diogoribeir.github.io/Web-scraping-Sample/ |
+| **Firebase (Google)** | Projeto **`apps-4b887`** — banco de dados dos apps (Firestore + Realtime Database) | https://console.firebase.google.com/project/apps-4b887 |
+| **Vercel** | **NÃO é usado.** Se o Diogo receber notificações da Vercel, pode deletar o projeto lá sem quebrar nada | — |
+
+### Como funciona o deploy
+- O workflow `.github/workflows/deploy-pages.yml` roda **a cada push no `master`** (ou manualmente:
+  aba **Actions → "Publicar apps no GitHub Pages" → Run workflow**).
+- Ele monta o site assim: raiz → `dias-sem-doenca/` · `/roteiro-paris/` → `roteiro-paris/` · `/paris-planner/` → `paris-planner/`.
+- Fluxo de trabalho do Claude: **branch → commit → push → PR → merge no `master`** (o Diogo autoriza o
+  Claude a mergear via ferramentas do GitHub). Depois do merge, verificar que o run terminou `success`.
+- O site atualiza ~1 min após o deploy (o cache do celular pode segurar alguns minutos).
+
+---
+
+## App 1 — 🩺 Dias sem Doença (Di & Tati)
+- **URL:** https://diogoribeir.github.io/Web-scraping-Sample/ (raiz do site)
+- **Pasta:** `dias-sem-doenca/` — HTML/CSS/JS puro, PWA (manifest + service worker `sw.js`).
+- **O que faz:** conta dias sem doença de cada um + placar do casal; registrar doença zera o contador
+  da pessoa e guarda no histórico; recuperação reinicia a contagem; backup exportar/importar no menu ⋯.
+- **Sincronização:** **Firestore** (documento `casal/estado`), com **login e-mail/senha** (Firebase
+  Authentication — 1 usuário do casal; a senha fica com o Diogo). Config em `dias-sem-doenca/firebase-config.js`.
+- **Regras do Firestore:** leitura/escrita em `/casal/{doc}` apenas com `request.auth != null`.
+- **Edição:** direto nos arquivos da pasta. Ao mexer no `app.js`/`styles.css`/`index.html`, regenerar o
+  arquivo único com `python3 dias-sem-doenca/build-standalone.py` e subir a versão de cache no `sw.js`
+  (`CACHE = "dias-sem-doenca-vN"`).
+
+## App 2 — 📊 Roteiro Paris (o do Diogo)
+- **URL:** https://diogoribeir.github.io/Web-scraping-Sample/roteiro-paris/
+- **Pasta:** `roteiro-paris/` — **arquivo único** `index.html` (dados embutidos em constantes JS).
+- **Viagem (datas FIXAS — respeitar sempre):** ida GRU→CDG **10/09/2026 19:35** (Air France 459,
+  chega 11/09 11:55) · volta CDG→GRU **18/09/2026 08:15** (KLM 2006/791, conexão Amsterdã).
+  7 dias inteiros em Paris (11–17/09); **dia 18 é só o voo, sem passeios**. Não existe mais cenário 10/12 dias.
+- **4 abas (mobile-first, navegação fixa embaixo):** ☑️ **Escolher** (SIM/NÃO por prioridade — o roteiro
+  risca o que foi cortado e o orçamento recalcula) · 🗓 **Roteiro** (dia a dia) · 💶 **Orçamento** ·
+  📖 **Guia** (Reservas, Informações, Atrações, Comer, Brechós, Transporte, Evitar — em seções sanfona, cards).
+- **Orçamento:** o total do topo é SÓ "gastos na viagem" (alimentação, jantares, atrações, cruzeiro,
+  transporte com **Navigo Semaine** semanal €65 casal, brechós, reserva). **Hotel fica em seção separada**
+  ("dinheiro já reservado") e **aéreo aparece como ✓ pago** — nunca somar no total de viagem.
+- **Sincronização:** **Realtime Database**, nó `planos/<código-da-viagem>` — o usuário liga em
+  "Sincronizar entre aparelhos" e compartilha por link `#viagem=<código>`. Config embutida no arquivo.
+- **Edição:** direto em `roteiro-paris/index.html` (constantes `SEL_ITEMS`, `DAYS`, `RESUMO`, `ATRACOES`,
+  `COMER`, `BRECHOS`, `TRANSPORTE`, `EVITAR`; fórmulas em `calcBudget()`).
+
+## App 3 — ✈️ Paris Trip Planner (o da Tati, React)
+- **URL:** https://diogoribeir.github.io/Web-scraping-Sample/paris-planner/
+- **Pastas:** `paris-planner-src/` (fonte Vite + React + Tailwind + lucide-react) e
+  `paris-planner/` (o build publicado — index.html + assets/).
+- **Quem desenvolve:** a **Tati**, num artifact do claude.ai dela. Ela exporta um `paristripplanner.tsx`
+  (~3400 linhas) e o Diogo traz o arquivo pra cá. **Não** alterar funcionalidades por conta própria —
+  a fonte da verdade do conteúdo é o arquivo dela.
+- **Sincronização:** Realtime Database via REST, nó **`planos/paris-planner-dt2026`** — o app carrega os
+  dados da nuvem ao abrir, salva ao mudar, e recarrega ao voltar se houver gravação mais nova. O arquivo
+  dela vem com `window.storage` (API que só existe no claude.ai) e é **substituído no build** por esse
+  bloco de nuvem + localStorage.
+
+### 🔁 FLUXO DE ATUALIZAÇÃO do App 3 (quando chegar um .tsx novo)
+1. Copiar o conteúdo do `.tsx` novo para `paris-planner-src/src/App.jsx`.
+2. **Trocar o bloco de storage**: localizar `async function loadKey` / `saveKey` (que usam
+   `window.storage`) e substituir pelo bloco com `SYNC_URL` (copiar do `App.jsx` atual do repositório
+   antes de sobrescrever, ou do histórico do git). `SYNC_URL = "https://apps-4b887-default-rtdb.firebaseio.com/planos/paris-planner-dt2026"`.
+   Conferir que não sobrou `window.storage` no arquivo.
+3. Compilar: `cd paris-planner-src && npm install && npm run build`
+4. Publicar o build: `rm -rf ../paris-planner/assets ../paris-planner/index.html && cp -r dist/. ../paris-planner/`
+5. Testar antes (ver "Convenções" abaixo), commit, push, PR, merge → Pages republica.
+- ⚠️ `paris-planner-src/vite.config.js` tem `base: "/Web-scraping-Sample/paris-planner/"` — se o
+  repositório for renomeado um dia, **atualizar essa base** e recompilar.
+
+---
+
+## Firebase — projeto `apps-4b887` (tudo num projeto só)
+- **Console:** https://console.firebase.google.com/project/apps-4b887
+- **Config web** (pública por design — a segurança vem das regras/login):
+  ```js
+  apiKey: "AIzaSyBrnrJI6vY97YOiNBnWAs7_t1Okylk5EOY",
+  authDomain: "apps-4b887.firebaseapp.com",
+  databaseURL: "https://apps-4b887-default-rtdb.firebaseio.com",
+  projectId: "apps-4b887",
+  storageBucket: "apps-4b887.firebasestorage.app",
+  messagingSenderId: "293435823400",
+  appId: "1:293435823400:web:4c08cad7f5342c8b4a6c1d"
+  ```
+- **Firestore** (App 1): regras exigem login. **Authentication**: e-mail/senha ativado, 1 usuário do casal.
+  Domínio autorizado: `diogoribeir.github.io`.
+- **Realtime Database** (Apps 2 e 3): regras publicadas =
+  `{ "rules": { "planos": { ".read": true, ".write": true }, ".read": false, ".write": false } }`
+  (nó `planos` aberto — o código do plano funciona como senha; não guardar dados sensíveis).
+- **Teste rápido do RTDB:** abrir https://apps-4b887-default-rtdb.firebaseio.com/planos/teste.json →
+  `null` = funcionando · `Permission denied` = regras não publicadas.
+
+---
+
+## Convenções de trabalho (para o Claude)
+- **Mobile first sempre**: os apps são usados no celular (≈390px). Nada de tabela larga (usar cards),
+  nada de scroll horizontal, testar também **modo escuro**.
+- **Testar antes de publicar**: rodar o app com servidor local + Playwright/Chromium headless
+  (pré-instalado), checar erros de console e o fluxo principal; para o App 3, testar com a rede do
+  Firebase bloqueada também (deve abrir com fallback local).
+- **Publicação**: o Diogo prefere que o Claude **faça o merge e acompanhe o deploy** sozinho, avisando
+  quando estiver no ar. Confirmar `conclusion: success` no workflow antes de dizer que subiu.
+- **Não misturar os dois apps de Paris**: o `roteiro-paris` é o do Diogo (planilha/escolhas); o
+  `paris-planner` é o da Tati (React, conteúdo vem do artifact dela).
+- Commits em inglês; interface e conversa em **português (BR)**.
