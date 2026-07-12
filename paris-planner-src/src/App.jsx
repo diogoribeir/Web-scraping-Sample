@@ -15,10 +15,9 @@ const TABS = [
   { id: "map", title: "Mapa", icon: MapIcon },
   { id: "food", title: "Alimentação", icon: Utensils },
   { id: "health", title: "Saúde", icon: HeartPulse },
-  { id: "meds", title: "Medicamentos", icon: Pill },
   { id: "logistics", title: "Logística", icon: Plane },
-  { id: "wishlist", title: "Wishlist", icon: ShoppingBag },
-  { id: "souvenirs", title: "Souvenirs", icon: Gift },
+  { id: "compras", title: "Compras", icon: ShoppingBag },
+  { id: "presentes", title: "Presentes", icon: Gift },
   { id: "outfits", title: "Outfits", icon: Shirt },
 ];
 
@@ -114,11 +113,35 @@ const emptyLogistics = {
       airline: "Air France", flightNumber: "459", date: "2026-09-10",
       depart: "19:35", arrive: "11:55", from: "GRU", to: "CDG",
       confirmation: "Decolar 267894351300 · web check-in X3Q8F7 · chega 11/09 em Paris",
+      seats: "31L e 31K (assento standard, já marcados)",
+      baggage: "2x bagagem de mão + 2x bolsa pequena por pessoa · 0x bagagem despachada incluída",
+      meals: "Café da manhã + refeição principal, sendo 1x refeição vegana já solicitada",
     },
     inbound: {
-      airline: "KLM (conexão em Amsterdã)", flightNumber: "2006 / 791", date: "2026-09-18",
+      airline: "KLM", flightNumber: "2006 / 791", date: "2026-09-18",
       depart: "08:15", arrive: "19:50", from: "CDG", to: "GRU",
-      confirmation: "Decolar 267894351300 · web check-in X3Q8F7 · escala AMS 3h20 (chega 09:40, sai 13:00)",
+      confirmation: "Decolar 267894351300 · web check-in X3Q8F7",
+      segments: [
+        {
+          leg: "1º trecho", flightNumber: "KL 2006", from: "CDG", to: "AMS",
+          depart: "08:15", arrive: "09:40", date: "18/09",
+          terminal: "Embarque no CDG: terminal a confirmar no e-ticket/check-in (KLM costuma operar do Terminal 2E/2F)",
+        },
+        {
+          leg: "Conexão em Amsterdã (AMS)", flightNumber: "", from: "", to: "",
+          depart: "09:40", arrive: "13:00", date: "18/09",
+          terminal: "Espera de 3h20 em Schiphol, tempo confortável pra uma conexão internacional. Schiphol é aeroporto de terminal único, então não tem troca de terminal — só seguir as placas de 'Flight Connections/Transfers'.",
+          procedure: "Passo a passo da conexão: 1) Desembarcar do voo CDG-AMS e seguir as placas amarelas de 'Flight Connections'. 2) Como o trecho CDG-AMS é dentro do Espaço Schengen mas o AMS-GRU sai do Schengen, tem controle de passaporte de saída do Schengen no meio do caminho — é rápido, mas leve o passaporte em mãos, não na mala. 3) Sem bagagem despachada (é o caso de vocês agora): só passar direto pela conexão com a bagagem de mão, sem precisar de esteira nem coleta — direto pro portão de embarque do KL 791. 4) Se em algum momento decidirem despachar mala: como os dois trechos são operados pela KLM na mesma reserva, a bagagem normalmente já sai despachada direto até o GRU (não precisa recolher e redespachar em Amsterdã) — mas sempre confirme isso no check-in em Guarulhos, pedindo pra conferir se a etiqueta vai até o destino final. 5) Chegando no portão, o embarque costuma fechar uns 20-30 min antes do horário de saída (13h00) — não deixe pra sair andando de última hora mesmo com a folga de 3h20.",
+        },
+        {
+          leg: "2º trecho", flightNumber: "KL 791", from: "AMS", to: "GRU",
+          depart: "13:00", arrive: "19:50", date: "18/09",
+          terminal: "Embarque em Schiphol: gate a confirmar no painel do aeroporto (costuma ser terminal único, área D/E/F/G/H). Chegada em GRU no mesmo dia (19h50, horário de Brasília) — o horário bate por causa do fuso, não é erro.",
+        },
+      ],
+      seats: "36A e 36B (assento standard, já marcados) — trecho AMS-GRU",
+      baggage: "2x bagagem de mão + 2x bolsa pequena por pessoa · 0x bagagem despachada incluída",
+      meals: "Refeição a bordo (trecho AMS-GRU) — detalhe do menu ainda não escolhido",
     },
   },
   accommodation: {
@@ -172,8 +195,8 @@ const defaultBudget = [
   },
   {
     id: uid(), category: "Passagem", item: "Passagem aérea (Air France / KLM)",
-    amount: "12436.00", currency: "BRL", status: "planejado",
-    notes: "Cobrada na fatura do cartão com vencimento em 03/08.",
+    amount: "13317.89", currency: "BRL", status: "planejado",
+    notes: "Cobrada na fatura do cartão com vencimento em 03/08. Inclui R$ 881,89 da compra de assentos nos voos (marcados para os dois: 31L/31K no trecho GRU-CDG, 36A/36B no trecho AMS-GRU).",
   },
   {
     id: uid(), category: "Dinheiro disponível", item: "Câmbio — 1º lote (€500)",
@@ -192,8 +215,8 @@ const defaultBudget = [
   },
   {
     id: uid(), category: "Transporte local", item: "Traslado aeroporto — chegada (11/09)",
-    amount: "53", currency: "EUR", status: "planejado",
-    notes: "Táxi tarifa fixa CDG → margem direita (17º, região do hotel): € 53 pro carro (até 4 pessoas/malas), então ~€26,50/pessoa — recomendado nesse dia pelo cansaço do voo. Alternativa mais barata: bilhete RER B (€14/pessoa = €28 no total), ~40min, mas com bagagem logo após 11h de voo.",
+    amount: "28", currency: "EUR", status: "planejado",
+    notes: "RER B (bilhete Île-de-France, €14/pessoa = €28 no total) até Gare du Nord, com baldeação pro metrô linha 2 até a Rome — decidido pela pouca bagagem, sem necessidade de táxi.",
   },
   {
     id: uid(), category: "Transporte local", item: "Bilhetes avulsos (11 a 13/09, antes do Navigo)",
@@ -210,10 +233,14 @@ const defaultBudget = [
 const defaultWishlist = [
   {
     id: uid(), item: "Sac cabas M Le Pliage Original", store: "Longchamp", storeAddress: "404 Rue Saint-Honoré, 75001 Paris",
-    price: "125.00", currency: "EUR", quantity: 1,
+    price: "200.00", currency: "EUR", quantity: 1,
     link: "https://www.longchamp.com/fr/fr/products/sac-cabas-m-L2605089504.html",
     icon: "bag", color: "#8B5E3C",
-    notes: "Toile recyclée, cor Cognac, ref. L2605089504. Já passa dos €100,01 mínimos na mesma loja/dia — dá pra pedir tax free (≈12% de volta, ~€15). Peça o formulário na hora com o passaporte e valide no aeroporto antes do check-in.",
+    notes: "Toile recyclée, cor Cognac, ref. L2605089504 — a bolsa em si custa €125. Orçamento aberto até €200 no total, pra dar espaço de trocar de modelo/cor ou incluir um item extra (carteira, pochette). Já passa dos €100,01 mínimos na mesma loja/dia — dá pra pedir tax free (≈12% de volta). Peça o formulário na hora com o passaporte e valide no aeroporto antes do check-in.",
+    alternatives: [
+      { name: "Polène", address: "69 Rue de Richelieu, 75002 Paris", notes: "Marca francesa que virou febre nas redes — bolsas estruturadas, mesma faixa de 'luxo acessível' que a Longchamp, só que num design mais minimalista/geométrico." },
+      { name: "Le Tanneur", address: "Vários endereços em Paris (marca francesa tradicional de couro)", notes: "Casa francesa de couro bem mais antiga que a Polène, discreta e menos hypada — bom se quiser fugir do que todo mundo tá usando." },
+    ],
   },
   {
     id: uid(), item: "Conjunto de talheres configurável (5 peças)", store: "Sabre", storeAddress: "39 Rue de Poitou, 75003 Paris",
@@ -221,6 +248,10 @@ const defaultWishlist = [
     link: "https://br.sabre-paris.com/br/products/produit-configurable-generique",
     icon: "cutlery", color: "#A88856",
     notes: "2 conjuntos de 5 peças a €56 cada = €112 total — dá pra escolher as cores na hora. Também passa dos €100,01 mínimos — tax free (≈12% de volta, ~€13,40), formulário com passaporte na compra e validado no aeroporto.",
+    alternatives: [
+      { name: "Forge de Laguiole", address: "29 Rue Boissy d'Anglas, 75008 Paris", notes: "A marca francesa de talheres/facas mais tradicional (desde 1829) — visual mais clássico/rústico (cabo de chifre) em vez do colorido moderno da Sabre." },
+      { name: "Laguiole en Aubrac", address: "Île Saint-Louis, Paris (perto da Notre-Dame)", notes: "Outra loja da mesma tradição de Laguiole, bem central — dá pra combinar com o passeio de domingo de manhã na Île de la Cité, já que fica ao lado." },
+    ],
   },
 ];
 
@@ -294,36 +325,49 @@ const defaultSouvenirs = [
   {
     id: uid(), category: "cha", item: "Mariage Frères", store: "Mariage Frères Le Marais",
     address: "30 Rue du Bourg-Tibourg, 75004 Paris", metro: "Saint-Paul (M1), ~3 min a pé",
+    avgPrice: "€14-18 (lata de 100g)",
     notes: "A mais tradicional casa de chá da França (desde 1854) — mais de 800 variedades, vendidas nas latinhas pretas clássicas. Fica no Marais, no mesmo dia da Sabre e dos brechós.",
     link: "https://www.mariagefreres.com", linkLabel: "site oficial",
   },
   {
     id: uid(), category: "cha", item: "Nina's Marie-Antoinette", store: "Nina's Paris (Vendôme)",
     address: "29 Rue Danielle Casanova, 75001 Paris", metro: "Pyramides (M7, M14) ou Opéra, ~5 min a pé",
+    avgPrice: "€13-16 (lata de 100g)",
     notes: "Casa de chá com receita histórica de 1672, famosa pelo blend 'Marie-Antoinette' (chá preto com maçã e pétalas de rosa). Fica perto da Place Vendôme, no caminho do dia da Longchamp.",
     link: "https://www.ninasparis.com", linkLabel: "site oficial",
   },
   {
     id: uid(), category: "chocolate", item: "Jacques Genin", store: "Jacques Genin Marais",
     address: "133 Rue de Turenne, 75003 Paris", metro: "Filles du Calvaire (M8), ~5 min a pé",
+    avgPrice: "€25-32 (caixa de caramelos/pâtes de fruits)",
     notes: "Um dos chocolatiers mais respeitados de Paris — os caramelos e as pâtes de fruits (balas de fruta) viajam bem e são perfeitos de presente. Nota 4,4/5. Fica no Marais, mesma região da Sabre.",
     link: "https://www.jacquesgenin.fr", linkLabel: "site oficial",
   },
   {
+    id: uid(), category: "chocolate", item: "Macarons Ladurée", store: "Ladurée Bonaparte",
+    address: "21 Rue Bonaparte, 75006 Paris", metro: "Saint-Germain-des-Prés (M4), ~4 min a pé",
+    avgPrice: "€16-17 (caixa de 6)",
+    notes: "O macaron mais clássico de Paris, desde 1862 — sabores como pistache, framboesa e caramelo com flor de sal. Essa unidade fica em Saint-Germain, mesma região do GoodJo/Kilo Shop/Luxemburgo. Não dura muito, então é mais pra saborear na viagem do que pra levar de presente.",
+    link: "https://laduree.com", linkLabel: "site oficial",
+  },
+  {
     id: uid(), category: "cafe", item: "Grãos de café torrados", store: "Terres de Café (Batignolles)",
     address: "33 Rue des Batignolles, 75017 Paris", metro: "Rome (M2), ~5 min a pé",
+    avgPrice: "€9-12 (pacote de 250g)",
     notes: "Torrefação especializada pertinho do hotel — já está na aba Alimentação como opção de café rápido, mas também vende grãos/pacotes fechados, ótimo pra levar de presente.",
     link: null, linkLabel: null,
   },
   {
     id: uid(), category: "manteiga", item: "Beurre Bordier", store: "La Grande Épicerie de Paris",
     address: "38 Rue de Sèvres, 75007 Paris", metro: "Sèvres-Babylone (M10, M12), na saída",
-    notes: "Considerada uma das melhores manteigas da França/do mundo. A Grande Épicerie faz embalagem a vácuo na hora — essencial pra sobreviver à viagem de volta ao Brasil. Sabores: tradicional, sal defumado, trufa, baunilha. A partir de ~€4.",
+    avgPrice: "€4-6 (peça de 125-250g)",
+    notes: "Considerada uma das melhores manteigas da França/do mundo. A Grande Épicerie faz embalagem a vácuo na hora — essencial pra sobreviver à viagem de volta ao Brasil. Sabores: tradicional, sal defumado, trufa, baunilha.",
     link: null, linkLabel: null,
   },
   {
     id: uid(), category: "manteiga", item: "Beurre Bordier (alternativa no Marais)", store: "L'Épicerie Breizh Café",
     address: "111 Rue Vieille du Temple, 75003 Paris", metro: "Saint-Sébastien – Froissart (M8), ~3 min a pé",
+    avgPrice: "€4-6 (peça de 125-250g)",
     notes: "Mesma manteiga Bordier, só que sem sair do Marais — dá pra pegar no mesmo dia da Sabre/brechós/Jacques Genin, sem precisar ir até o 7º.",
     link: null, linkLabel: null,
   },
@@ -511,6 +555,17 @@ const defaultFood = [
     linkLabel: "site oficial",
     notes: "Street food israelense especializada no sabich, sanduíche tradicional judaico-iraquiano — pede no balcão, é rápido e dá pra levar pra comer sentado numa praça por perto. Tem uma segunda unidade em 6 Rue Notre-Dame de Lorette, 75009.",
   },
+  {
+    id: uid(), name: "Junk Burgers (smash burger)", category: "rapida",
+    address: "4 Rue de l'Ancienne Comédie, 75006 Paris", walkMinutes: null,
+    priceRange: "$", vegetarian: "Sim — opção de burger vegano no cardápio",
+    hours: "Todos os dias, 12h-22h30",
+    payment: "Cartão e dinheiro",
+    rating: null,
+    link: "https://www.junkburgers.com/en/nosadresses",
+    linkLabel: "site oficial",
+    notes: "Smash burger sem frescura — só pão brioche, carne, queijo e molho da casa, do tamanho S ao XXL. Pede no balcão, sem garçom. Essa unidade fica perto do Odéon, mesma região do GoodJo/Kilo Shop/Luxemburgo (terça-feira).",
+  },
 ];
 
 // Números de emergência e recursos de saúde válidos para toda a viagem.
@@ -597,15 +652,22 @@ const defaultItinerary = [
     costAmount: "", costCurrency: "EUR", notes: "Voo Air France 459, chegando de Guarulhos.",
   },
   {
-    id: uid(), date: "2026-09-11", time: "13:00", title: "Traslado até o hotel", type: "transporte",
-    address: "", lat: null, lng: null, metro: "",
-    costAmount: "53", costCurrency: "EUR", notes: "Táxi tarifa fixa CDG → 17º (margem direita), ~45-60 min. Valor já contabilizado no orçamento.",
+    id: uid(), date: "2026-09-11", time: "12:35", title: "Traslado até o hotel (RER B + metrô)", type: "transporte",
+    address: "", lat: null, lng: null, metro: "RER B até Gare du Nord, baldeia pro M2 até a Rome",
+    costAmount: "28", costCurrency: "EUR", notes: "RER B (€14/pessoa) até Gare du Nord, depois metrô linha 2 até a Rome — ~60-75 min no total com a baldeação. Decidido por causa da pouca bagagem, sem precisar de táxi.",
   },
   {
-    id: uid(), date: "2026-09-11", time: "13:30", title: "Check-in / deixar as malas no LALA Hôtel", type: "hospedagem",
+    id: uid(), date: "2026-09-11", time: "13:45", title: "Check-in / deixar as malas no LALA Hôtel", type: "hospedagem",
     address: "3 Rue Darcet, 17º arr., 75017 Paris", lat: 48.8847, lng: 2.3218,
     metro: "Rome (M2), ~6 min a pé",
     costAmount: "", costCurrency: "EUR", notes: "Chegada oficial do check-in é dia 11/09. Aproveite pra descansar um pouco da viagem.",
+  },
+  {
+    id: uid(), date: "2026-09-11", time: "14:00", title: "Almoço na Breizh Café Batignolles", type: "restaurante",
+    address: "31 Rue des Batignolles, 75017 Paris", lat: 48.8837, lng: 2.3226,
+    metro: "Rome (M2), ~5 min a pé",
+    costAmount: "20", costCurrency: "EUR",
+    notes: "Pertinho do hotel — galette de trigo sarraceno pro primeiro almoço em Paris, sem precisar ir longe logo depois da viagem.",
   },
   {
     id: uid(), date: "2026-09-11", time: "16:00", title: "Passeio pela Montmartre de Amélie Poulain", type: "passeio",
@@ -622,9 +684,30 @@ const defaultItinerary = [
     notes: "A cabine analógica de verdade que aparece no filme Amélie Poulain — fotos em preto e branco, €6 a tira de 4 poses (aceita moedas de €1/€2 e cartão contactless). Costuma ter fila nos fins de semana à tarde/noite, então talvez valha ir antes do Sacré-Cœur.",
   },
   {
+    id: uid(), date: "2026-09-11", time: "19:30", title: "Jantar em Montmartre", type: "restaurante",
+    address: "Rue des Trois Frères, 75018 Paris", lat: 48.885, lng: 2.3405,
+    metro: "Abbesses (M12), ~2 min a pé",
+    costAmount: "25", costCurrency: "EUR",
+    notes: "Jantar leve e sem pressa depois da cabine de fotos — sem sair da região, já que ainda é o primeiro dia e o cansaço da viagem pode pesar.",
+  },
+  {
+    id: uid(), date: "2026-09-11", time: "21:00", title: "Monoprix (compras pra manhã)", type: "compras",
+    address: "Place de Clichy, 75017/75008 Paris", lat: 48.8830, lng: 2.3273,
+    metro: "Place de Clichy (M2, M13), na saída",
+    costAmount: "0", costCurrency: "EUR",
+    notes: "Passa antes de voltar pro hotel pra comprar pão, fruta e algo pra beber — amanhã sai muito cedo (6h) e nenhum café vai estar aberto ainda.",
+  },
+  {
     id: uid(), date: "", time: "", title: "Pret A Manger", type: "restaurante",
     address: "", lat: null, lng: null, metro: "",
     costAmount: "", costCurrency: "EUR", notes: "",
+  },
+  {
+    id: uid(), date: "2026-09-15", time: "10:00", title: "Café da manhã perto do Canal Saint-Martin", type: "restaurante",
+    address: "Rue du Faubourg du Temple, 75011 Paris", lat: 48.868, lng: 2.3665,
+    metro: "Goncourt (M11), ~3 min a pé",
+    costAmount: "12", costCurrency: "EUR",
+    notes: "Qualquer padaria/café pela região resolve antes do Café Pli — o Canal Saint-Martin tem bastante opção de boulangerie.",
   },
   {
     id: uid(), date: "2026-09-15", time: "11:00", title: "Café Pli", type: "passeio",
@@ -638,35 +721,83 @@ const defaultItinerary = [
     address: "39 Rue des Vinaigriers, 75010 Paris", lat: 48.8712, lng: 2.3618,
     metro: "Jacques Bonsergent (M5) ou Gare de l'Est, ~5 min a pé",
     costAmount: "0", costCurrency: "EUR",
-    notes: "Padaria renomada bem perto do Canal Saint-Martin — pegue pães, sanduíches e doces aqui pra guardar pro piquenique no Jardim de Luxemburgo mais tarde.",
+    notes: "Padaria renomada bem perto do Canal Saint-Martin — pegue pães, sanduíches e doces aqui pra guardar pro piquenique no Jardim de Luxemburgo mais tarde. Saia até 12h15 — são uns 25-30 min de metrô até lá (linha 5 + baldeação), então não dá pra enrolar muito aqui.",
   },
   {
-    id: uid(), date: "2026-09-14", time: "14:00", title: "Comprar bolsa na Longchamp", type: "compras",
+    id: uid(), date: "2026-09-14", time: "13:00", title: "Almoço no Jardim des Tuileries", type: "restaurante",
+    address: "Jardin des Tuileries, 75001 Paris", lat: 48.8635, lng: 2.3275,
+    metro: "Tuileries (M1), na entrada do jardim",
+    costAmount: "15", costCurrency: "EUR",
+    notes: "Tem um Paul (padaria) dentro do próprio jardim — bom almoço leve antes de seguir pra Longchamp, que é pertinho.",
+  },
+  {
+    id: uid(), date: "2026-09-14", time: "14:00", title: "Longchamp", type: "compras",
     address: "404 Rue Saint-Honoré, 75001 Paris", lat: 48.8666, lng: 2.3272,
     metro: "Concorde (M1, M8, M12), ~3 min a pé",
-    costAmount: "125", costCurrency: "EUR",
-    notes: "Flagship no 1º arr. (404 rue Saint-Honoré) — a maior loja da marca no mundo. Outras opções: 21 Rue du Vieux Colombier, 75006 (Saint-Germain) e 77 Av. des Champs-Élysées, 75008. Modelo escolhido: Sac cabas M Le Pliage Original, toile recyclée cor Cognac, ref. L2605089504, € 125 — https://www.longchamp.com/fr/fr/products/sac-cabas-m-L2605089504.html. Tax free: sozinha já passa dos € 100,01 mínimos numa mesma loja/dia, então dá pra pedir a détaxe (≈12% de volta, ~€15) — peça o formulário na hora com o passaporte e valide no aeroporto antes do check-in.",
+    costAmount: "200", costCurrency: "EUR",
+    notes: "Flagship no 1º arr. (404 rue Saint-Honoré) — a maior loja da marca no mundo. Outras opções: 21 Rue du Vieux Colombier, 75006 (Saint-Germain) e 77 Av. des Champs-Élysées, 75008. Modelo escolhido: Sac cabas M Le Pliage Original, toile recyclée cor Cognac, ref. L2605089504, € 125 — https://www.longchamp.com/fr/fr/products/sac-cabas-m-L2605089504.html. Orçamento aberto até €200, com espaço pra trocar de modelo ou incluir carteira/pochette. Outras boas pedidas: carteiras e pochettes Le Pliage (mais em conta que a bolsa, ótimas de presente) e a linha Le Pliage Cuir (versão em couro, mais sofisticada). Tax free: sozinha já passa dos € 100,01 mínimos numa mesma loja/dia, então dá pra pedir a détaxe (≈12% de volta) — peça o formulário na hora com o passaporte e valide no aeroporto antes do check-in.",
   },
   {
-    id: uid(), date: "2026-09-13", time: "15:30", title: "Passear em brechós", type: "compras",
+    id: uid(), date: "2026-09-14", time: "15:30", title: "Opéra Garnier (área externa)", type: "passeio",
+    address: "Place de l'Opéra, 75009 Paris", lat: 48.8719, lng: 2.3316,
+    metro: "Opéra (M3, M7, M8), na saída",
+    costAmount: "0", costCurrency: "EUR",
+    notes: "Só a fachada suntuosa do teatro — sem entrar (ingresso pago). Fica a uns 10-15 min a pé da Longchamp, pela Rue de la Paix/Place Vendôme.",
+  },
+  {
+    id: uid(), date: "2026-09-14", time: "18:15", title: "Jantar no Le Progrès (Montmartre)", type: "restaurante",
+    address: "7 Rue des Trois Frères, 75018 Paris", lat: 48.8852, lng: 2.3406,
+    metro: "Abbesses (M12), ~2 min a pé",
+    costAmount: "50", costCurrency: "EUR",
+    notes: "O jantar intimista da viagem — bistrô tradicional parisiense de verdade (nota 9/10), na mesma rua da cabine de fotos que vocês já visitaram no primeiro dia. Apesar de perto do Sacré-Cœur, não é armadilha turística — é frequentado por gente do bairro. Saída da Opéra Garnier ~16h para chegar com folga (uns 25-30 min de metrô).",
+  },
+  {
+    id: uid(), date: "2026-09-14", time: "20:00", title: "Monoprix (compras pra manhã)", type: "compras",
+    address: "Place de Clichy, 75017/75008 Paris", lat: 48.883, lng: 2.3273,
+    metro: "Place de Clichy (M2, M13), na saída",
+    costAmount: "0", costCurrency: "EUR",
+    notes: "Passa antes de voltar pro hotel pra ter café/pão/fruta prontos amanhã de manhã.",
+  },
+  {
+    id: uid(), date: "2026-09-13", time: "15:30", title: "Free'p'Star", type: "compras",
     address: "61 Rue de la Verrerie, 75004 Paris", lat: 48.858, lng: 2.355,
     metro: "Hôtel de Ville (M1, M11), ~2 min a pé",
     costAmount: "", costCurrency: "EUR",
-    notes: "Sugestões no Marais: Free'p'Star (61 Rue de la Verrerie, 75004) e Kilo Shop (vende por peso). Vintage de grife: Thanx God I'm a V.I.P (12 Rue de Lancry, 75010). Mais em conta: Guerrisol (21 Blvd Marguerite de Rochechouart, 75009).",
+    notes: "Vintage/segunda mão do Marais. Boas pedidas: jaquetas jeans e de couro (bem precificadas), camisetas de banda originais, e peças esportivas retrô (corta-ventos, moletons). Outras opções na região: Kilo Shop (vende por peso). Vintage de grife: Thanx God I'm a V.I.P (12 Rue de Lancry, 75010). Mais em conta: Guerrisol (21 Blvd Marguerite de Rochechouart, 75009).",
   },
   {
     id: uid(), date: "2026-09-13", time: "16:30", title: "Uniqlo Marais", type: "compras",
     address: "39 Rue des Francs-Bourgeois, 75004 Paris", lat: 48.8578, lng: 2.3608,
     metro: "Saint-Paul (M1), ~2 min a pé",
     costAmount: "", costCurrency: "EUR",
-    notes: "Loja de 3 andares numa antiga fábrica do século 19 (Usine des Cendres) — uma das maiores Uniqlo de Paris, pertinho da Place des Vosges. Aberta domingo das 10h às 20h, então fecha bem o resto da tarde no Marais.",
+    notes: "Loja de 3 andares numa antiga fábrica do século 19 (Usine des Cendres) — uma das maiores Uniqlo de Paris, pertinho da Place des Vosges. Boas pedidas: linha Heattech (camisetas/leggings térmicas, ótimas pra levar de volta pro frio do Brasil), jaqueta ultra-light dobrável, e as camisetas UT com estampas exclusivas de Paris. Aberta domingo das 10h às 20h, então fecha bem o resto da tarde no Marais.",
+  },
+  {
+    id: uid(), date: "2026-09-13", time: "17:00", title: "Muji Marais", type: "compras",
+    address: "47 Rue des Francs-Bourgeois, 75004 Paris", lat: 48.858, lng: 2.361,
+    metro: "Saint-Paul (M1), ~2 min a pé",
+    costAmount: "", costCurrency: "EUR",
+    notes: "Bem do lado da Uniqlo, mesma rua — papelaria japonesa, roupas básicas, itens de casa e organização, bons pra presente. Boas pedidas: nécessaires e organizadores de viagem em nylon, canetas/cadernos de papelaria, e o difusor de aromas compacto. A loja do Marais também abre aos domingos.",
+  },
+  {
+    id: uid(), date: "2026-09-13", time: "17:45", title: "Monoprix Beaubourg (compras pra manhã)", type: "compras",
+    address: "71 Rue Rambuteau, 75004 Paris", lat: 48.8608, lng: 2.3517,
+    metro: "Rambuteau (M11), ~2 min a pé",
+    costAmount: "0", costCurrency: "EUR",
+    notes: "Passa aqui antes de voltar pro hotel pra ter café/pão/fruta prontos amanhã de manhã (segunda começa tranquilo, mas nunca custa ter algo em mãos).",
+  },
+  {
+    id: uid(), date: "2026-09-13", time: "18:30", title: "Jantar na Breizh Café (Marais)", type: "restaurante",
+    address: "109 Rue Vieille du Temple, 75003 Paris", lat: 48.8611, lng: 2.3635,
+    metro: "Saint-Sébastien – Froissart (M8), ~3 min a pé",
+    costAmount: "25", costCurrency: "EUR",
+    notes: "A unidade original da rede, ali onde vocês já passaram pra provar a manteiga Bordier — fecha o domingo com um jantar de galettes sem precisar ir mais longe.",
   },
   {
     id: uid(), date: "2026-09-14", time: "09:30", title: "Comprar lanche na Café Dose", type: "restaurante",
     address: "82 Place du Dr Félix Lobligeois, 75017 Paris", lat: 48.8869, lng: 2.3223,
     metro: "Rome (M2), ~5 min a pé",
-    costAmount: "0", costCurrency: "EUR",
-    notes: "Pães, quiches e lanches pra viagem — fica pertinho do hotel, em Batignolles. Dali é uns 20 min a pé (ou 2 paradas de metrô) até o Parc Monceau.",
+    costAmount: "12", costCurrency: "EUR",
   },
   {
     id: uid(), date: "2026-09-14", time: "10:00", title: "Parc Monceau (piquenique)", type: "passeio",
@@ -676,11 +807,25 @@ const defaultItinerary = [
     notes: "Parque elegante com arquitetura clássica (colunata, pirâmide, pontezinha). Piquenique logo na chegada, com o lanche já comprado na Café Dose, e depois uma caminhada tranquila pelo parque.",
   },
   {
-    id: uid(), date: "2026-09-13", time: "07:00", title: "Notre-Dame / Île de la Cité (área externa)", type: "passeio",
+    id: uid(), date: "2026-09-13", time: "06:30", title: "Louvre (área externa)", type: "passeio",
+    address: "Musée du Louvre, Cour Napoléon, 75001 Paris", lat: 48.8606, lng: 2.3376,
+    metro: "Palais Royal – Musée du Louvre (M1, M7), na saída",
+    costAmount: "0", costCurrency: "EUR",
+    notes: "Só o pátio e a pirâmide de vidro — sem entrar no museu. Chegando 6h30 dá pra fotografar completamente sozinha, bem antes de qualquer grupo de turista aparecer.",
+  },
+  {
+    id: uid(), date: "2026-09-13", time: "07:15", title: "Notre-Dame / Île de la Cité (área externa)", type: "passeio",
     address: "Parvis Notre-Dame – Place Jean-Paul II, 75004 Paris", lat: 48.853, lng: 2.3499,
     metro: "Cité (M4) ou Saint-Michel Notre-Dame (RER B/C), na saída",
     costAmount: "0", costCurrency: "EUR",
-    notes: "Fotos da fachada e da Île de la Cité sem gente, antes da Shakespeare and Company abrir (10h) — o entorno da catedral costuma ficar bem tranquilo até umas 8h-9h.",
+    notes: "Direto do Louvre a pé (~15-20 min) ou de metrô — fotos da fachada e da Île de la Cité sem gente, antes da Shakespeare and Company abrir (10h).",
+  },
+  {
+    id: uid(), date: "2026-09-13", time: "08:00", title: "Café da manhã no Quartier Latin", type: "restaurante",
+    address: "Rue Saint-Jacques / Rue de la Huchette, 75005 Paris", lat: 48.8517, lng: 2.3459,
+    metro: "Saint-Michel (M4), ~3 min a pé",
+    costAmount: "12", costCurrency: "EUR",
+    notes: "Qualquer padaria por ali resolve, antes de seguir pra Shakespeare and Company às 10h — dá tempo de comer com calma vendo o movimento do Quartier Latin acordar.",
   },
   {
     id: uid(), date: "2026-09-13", time: "10:00", title: "Shakespeare and Company", type: "passeio",
@@ -697,46 +842,101 @@ const defaultItinerary = [
     notes: "Refaz o passeio de Jesse e Céline no filme: saindo da livraria, pega a Rue Saint-Julien le Pauvre, depois Rue Galande, atravessa o Sena e segue por Rue des Jardins Saint-Paul e Rue Charlemagne até a Rue Saint-Paul — termina bem na entrada do Marais, a tempo pra Sabre e os brechós à tarde.",
   },
   {
-    id: uid(), date: "2026-09-13", time: "12:30", title: "Brechó Alatone", type: "compras",
+    id: uid(), date: "2026-09-13", time: "11:45", title: "Centre Pompidou (área externa)", type: "passeio",
+    address: "Place Georges-Pompidou, 75004 Paris", lat: 48.8607, lng: 2.3522,
+    metro: "Rambuteau (M11), ~2 min a pé",
+    costAmount: "0", costCurrency: "EUR",
+    notes: "Só a fachada industrial (tubulações coloridas por fora) — sem entrar no museu. Fica pertinho da Alatone e do resto do roteiro do Marais. Saia até 12h — é só uns 5-8 min a pé até o L'As du Fallafel.",
+  },
+  {
+    id: uid(), date: "2026-09-13", time: "12:00", title: "Almoço no L'As du Fallafel", type: "restaurante",
+    address: "34 Rue des Rosiers, 75004 Paris", lat: 48.8572, lng: 2.3591,
+    metro: "Saint-Paul (M1), ~4 min a pé",
+    costAmount: "8", costCurrency: "EUR",
+    notes: "O falafel mais famoso de Paris — pede na janela de takeaway e come sentado numa praça por perto, rapidinho antes das compras da tarde (ver aba Alimentação pros detalhes).",
+  },
+  {
+    id: uid(), date: "2026-09-13", time: "12:30", title: "Alatone", type: "compras",
     address: "96 Rue Rambuteau, 75001 Paris", lat: 48.862, lng: 2.3495,
     metro: "Rambuteau (M11), na porta",
     costAmount: "", costCurrency: "EUR",
-    notes: "Fica entre Les Halles e o Marais — cai bem no caminho entre a caminhada de 'Before Sunset' e a Sabre/brechós da tarde.",
+    notes: "Fica entre Les Halles e o Marais — cai bem no caminho entre a caminhada de 'Before Sunset' e a Sabre/brechós da tarde. Boas pedidas: peças curadas de grife (costuma ter seleção mais garimpada que os brechós por peso) e acessórios vintage (cintos, bolsas pequenas).",
   },
   {
-    id: uid(), date: "2026-09-13", time: "13:30", title: "Comprar talher na Sabre", type: "compras",
+    id: uid(), date: "2026-09-13", time: "13:30", title: "Sabre", type: "compras",
     address: "39 Rue de Poitou, 75003 Paris", lat: 48.8631, lng: 2.3641,
     metro: "Filles du Calvaire (M8), ~5 min a pé",
     costAmount: "112", costCurrency: "EUR",
-    notes: "Boutique no Marais (39 Rue de Poitou) — dá pra montar um jogo customizado na hora, escolhendo as cores. 2 conjuntos configuráveis (5 peças cada) a € 56 cada = € 112 — https://br.sabre-paris.com/br/products/produit-configurable-generique. Tax free: passa dos € 100,01 mínimos na mesma loja/dia, então dá pra pedir a détaxe (≈12% de volta, ~€13,40) — peça o formulário com o passaporte na hora da compra e valide no aeroporto antes do check-in.",
+    notes: "Boutique no Marais (39 Rue de Poitou) — dá pra montar um jogo customizado na hora, escolhendo as cores. 2 conjuntos configuráveis (5 peças cada) a € 56 cada = € 112 — https://br.sabre-paris.com/br/products/produit-configurable-generique. Outras boas pedidas: talher avulso pra presente (mais barato que o conjunto fechado) e a linha de utensílios de cozinha (espátulas, colheres) com os mesmos cabos coloridos. Tax free: passa dos € 100,01 mínimos na mesma loja/dia, então dá pra pedir a détaxe (≈12% de volta, ~€13,40) — peça o formulário com o passaporte na hora da compra e valide no aeroporto antes do check-in.",
   },
   {
-    id: uid(), date: "2026-09-12", time: "07:00", title: "Trocadéro (vista da torre)", type: "passeio",
-    address: "Esplanade du Trocadéro, 75016 Paris", lat: 48.8629, lng: 2.2877,
-    metro: "Trocadéro (M6, M9), na saída",
+    id: uid(), date: "2026-09-13", time: "14:15", title: "Provar chocolates na Jacques Genin", type: "restaurante",
+    address: "133 Rue de Turenne, 75003 Paris", metro: "Filles du Calvaire (M8), ~5 min a pé",
+    lat: 48.8631, lng: 2.3617,
     costAmount: "0", costCurrency: "EUR",
-    notes: "O melhor ângulo pra fotografar a Torre Eiffel inteira, de frente — e de manhã bem cedo (antes das 8h) ainda está bem vazio, diferente do resto do dia. Point clássico de nascer do sol.",
+    notes: "Ainda não precisa decidir o que levar — só provar os caramelos e pâtes de fruits agora pra ir anotando os favoritos. A decisão final de quanto comprar fica pro fim da viagem (ver aba Compras).",
   },
   {
-    id: uid(), date: "2026-09-12", time: "07:30", title: "Torre Eiffel (área externa)", type: "passeio",
+    id: uid(), date: "2026-09-13", time: "14:45", title: "Provar manteiga Bordier na Breizh Café", type: "restaurante",
+    address: "111 Rue Vieille du Temple, 75003 Paris", metro: "Saint-Sébastien – Froissart (M8), ~3 min a pé",
+    lat: 48.8611, lng: 2.3635,
+    costAmount: "0", costCurrency: "EUR",
+    notes: "A épicerie do Breizh Café vende a manteiga Bordier nos sabores tradicional, sal defumado, trufa e baunilha — bom momento pra provar um pouco de cada e decidir o favorito antes de comprar de verdade mais perto da volta.",
+  },
+  {
+    id: uid(), date: "2026-09-12", time: "06:00", title: "Saída do hotel", type: "transporte",
+    address: "", lat: null, lng: null, metro: "",
+    costAmount: "0", costCurrency: "EUR",
+    notes: "De táxi/Uber (~15-20 min a essa hora, com pouco trânsito) pra chegar na Rue de Camoëns até as 6h30. O metrô ainda não é confiável nesse horário tão cedo com baldeação — vale o táxi só nesse trecho específico.",
+  },
+  {
+    id: uid(), date: "2026-09-12", time: "06:30", title: "Rue de Camoëns (fotos da torre)", type: "passeio",
+    address: "Rue de Camoëns, 75016 Paris", lat: 48.8615, lng: 2.2843,
+    metro: "Trocadéro (M6, M9), ~5 min a pé",
+    costAmount: "0", costCurrency: "EUR",
+    notes: "Ponto clássico de foto da Torre Eiffel — a escadaria com grades de ferro emoldura a torre ao fundo, sem gente essa hora da manhã. Alternativa bem perto: Rue de l'Université, do outro lado do rio (7º), que também dá um corredor de visão direto pra torre.",
+  },
+  {
+    id: uid(), date: "2026-09-12", time: "07:15", title: "Torre Eiffel (área externa)", type: "passeio",
     address: "Champ de Mars, 5 Avenue Anatole France, 75007 Paris", lat: 48.8584, lng: 2.2945,
     metro: "Bir-Hakeim (M6), ~8 min a pé — ou RER C Champ de Mars–Tour Eiffel, na saída",
     costAmount: "0", costCurrency: "EUR",
-    notes: "Desça do Trocadéro atravessando a Pont d'Iéna pra chegar aos pés da torre. Só a área externa (Champ de Mars) — sem subir. Ainda cedo o bastante pra evitar as multidões que se formam a partir de umas 9h-10h.",
+    notes: "Desça da Rue de Camoëns atravessando a Pont d'Iéna pra chegar aos pés da torre. Só a área externa (Champ de Mars) — sem subir. Ainda cedo o bastante pra evitar as multidões que se formam a partir de umas 9h-10h.",
   },
   {
-    id: uid(), date: "2026-09-12", time: "08:15", title: "Pont de Bir-Hakeim", type: "passeio",
+    id: uid(), date: "2026-09-12", time: "08:00", title: "Pont de Bir-Hakeim", type: "passeio",
     address: "Pont de Bir-Hakeim, 75015 Paris", lat: 48.8535, lng: 2.2887,
     metro: "Bir-Hakeim (M6) ou Passy (M6), ~3 min a pé",
     costAmount: "0", costCurrency: "EUR",
-    notes: "Ponte de metrô elevada bem pertinho do Champ de Mars — apareceu em 'Inception' e é um dos points mais fotografados de Paris, com a torre ao fundo pela estrutura de ferro. Rapidinho, uns 15-20 min já resolve.",
+    notes: "Ponte de metrô elevada bem pertinho do Champ de Mars — apareceu em 'Inception' e é um dos points mais fotografados de Paris, com a torre ao fundo pela estrutura de ferro. Rapidinho, uns 15-20 min já resolve. Saia até 8h15 pra chegar na Rue Cler até 8h30 (uns 15 min a pé).",
   },
   {
-    id: uid(), date: "2026-09-12", time: "09:00", title: "Louvre (área externa)", type: "passeio",
-    address: "Musée du Louvre, Cour Napoléon, 75001 Paris", lat: 48.8606, lng: 2.3376,
-    metro: "Palais Royal – Musée du Louvre (M1, M7), na saída",
+    id: uid(), date: "2026-09-12", time: "08:30", title: "Café da manhã na Rue Cler", type: "restaurante",
+    address: "Rue Cler, 75007 Paris", lat: 48.8577, lng: 2.3057,
+    metro: "École Militaire (M8), ~5 min a pé",
+    costAmount: "12", costCurrency: "EUR",
+    notes: "Rua de mercado tradicional do 7º, cheia de padarias e mercearias — qualquer uma resolve pro café da manhã depois das fotos da torre. Fica a uns 15 min a pé do Bir-Hakeim.",
+  },
+  {
+    id: uid(), date: "2026-09-12", time: "09:30", title: "Hôtel des Invalides (área externa)", type: "passeio",
+    address: "Esplanade des Invalides, 75007 Paris", lat: 48.8566, lng: 2.3125,
+    metro: "Invalides (M8, M13), na saída",
     costAmount: "0", costCurrency: "EUR",
-    notes: "Só o pátio e a pirâmide de vidro — sem entrar no museu. Ainda dá pra pegar um horário mais tranquilo antes dos grandes grupos de turistas chegarem, por volta das 10h-11h.",
+    notes: "Só a fachada e a cúpula dourada (onde está o túmulo de Napoleão) — sem entrar no museu militar. Fica a uns 10 min a pé da Rue Cler.",
+  },
+  {
+    id: uid(), date: "2026-09-12", time: "11:00", title: "Almoço perto do Musée d'Orsay", type: "restaurante",
+    address: "Rue de Lille / Quai Anatole France, 75007 Paris", lat: 48.8605, lng: 2.3265,
+    metro: "Musée d'Orsay (RER C) ou Solférino (M12)",
+    costAmount: "20", costCurrency: "EUR",
+    notes: "Cafés e brasseries na região do museu — bom horário pra almoçar antes de seguir pros Champs-Élysées à tarde.",
+  },
+  {
+    id: uid(), date: "2026-09-12", time: "12:00", title: "Musée d'Orsay (área externa)", type: "passeio",
+    address: "1 Rue de la Légion d'Honneur, 75007 Paris", lat: 48.86, lng: 2.3266,
+    metro: "Musée d'Orsay (RER C), na saída",
+    costAmount: "0", costCurrency: "EUR",
+    notes: "Só a fachada da antiga estação de trem (Gare d'Orsay) — arquitetura icônica, sem entrar no museu. Fica de frente pro Sena, ótimas fotos com o relógio gigante.",
   },
   {
     id: uid(), date: "2026-09-12", time: "14:00", title: "Avenue des Champs-Élysées", type: "passeio",
@@ -767,6 +967,20 @@ const defaultItinerary = [
     notes: "Fecha o dia sentados na margem do rio perto do Pont Alexandre III — um dos trechos mais bonitos pra ver o pôr do sol e a Torre Eiffel iluminada à distância. Pegue queijos, presunto, baguete e um vinho numa mercearia/cave à vin no caminho (tem várias pela Av. Bosquet e Rue Saint-Dominique, perto do Eiffel).",
   },
   {
+    id: uid(), date: "2026-09-12", time: "21:00", title: "Monoprix Champs-Élysées (compras pra manhã)", type: "compras",
+    address: "52 Avenue des Champs-Élysées, 75008 Paris", lat: 48.8712, lng: 2.3055,
+    metro: "Franklin D. Roosevelt (M1, M9), ~2 min a pé",
+    costAmount: "0", costCurrency: "EUR",
+    notes: "Fica aberto até tarde — passa aqui antes de voltar pro hotel pra ter café/pão/fruta prontos amanhã de manhã.",
+  },
+  {
+    id: uid(), date: "2026-09-16", time: "07:15", title: "Café da manhã perto da Gare Saint-Lazare", type: "restaurante",
+    address: "Rue Saint-Lazare, 75008/75009 Paris", lat: 48.8759, lng: 2.3252,
+    metro: "Saint-Lazare (M3, M12, M13, M14)",
+    costAmount: "12", costCurrency: "EUR",
+    notes: "Qualquer padaria da região da estação resolve antes de pegar o trem — chegue com folga pro trem das 8h.",
+  },
+  {
     id: uid(), date: "2026-09-16", time: "08:00", title: "Jardim de Monet (Giverny)", type: "passeio",
     address: "Fondation Claude Monet, 84 Rue Claude Monet, 27620 Giverny, França", lat: 49.0762, lng: 1.5339,
     metro: "Sem metrô — trem de Paris Gare Saint-Lazare até Vernon (~45-50 min) + ônibus até Giverny (~15-20 min)",
@@ -774,25 +988,157 @@ const defaultItinerary = [
     notes: "Bate-volta fora de Paris (a ~75 km, região da Normandia) — reserve o dia inteiro. Ingresso da Fundação ≈ €11 + trem ida/volta ≈ €20-35 + ônibus Vernon-Giverny ida/volta ≈ €10. Aberto só de abril a novembro. Compre o ingresso do jardim com antecedência no site da Fondation Monet pra não pegar fila.",
   },
   {
-    id: uid(), date: "2026-09-15", time: "12:30", title: "Jardim de Luxemburgo (piquenique)", type: "passeio",
+    id: uid(), date: "2026-09-16", time: "12:30", title: "Almoço em Giverny", type: "restaurante",
+    address: "Giverny, 27620 França", lat: 49.0755, lng: 1.5335,
+    metro: "", costAmount: "18", costCurrency: "EUR",
+    notes: "Restaurantinhos e cafés pertinho da Fondation Monet — bom momento pro almoço antes de pegar o ônibus/trem de volta pra Paris.",
+  },
+  {
+    id: uid(), date: "2026-09-16", time: "18:30", title: "Jantar perto da Gare Saint-Lazare", type: "restaurante",
+    address: "Rue Saint-Lazare, 75008/75009 Paris", lat: 48.8759, lng: 2.3252,
+    metro: "Saint-Lazare (M3, M12, M13, M14)",
+    costAmount: "25", costCurrency: "EUR",
+    notes: "Direto do trem de volta de Giverny, antes de seguir pro hotel — a região da estação tem bastante opção de brasserie.",
+  },
+  {
+    id: uid(), date: "2026-09-16", time: "19:30", title: "Monoprix Saint-Lazare (compras pra manhã)", type: "compras",
+    address: "Gare Saint-Lazare, 75008 Paris", lat: 48.8756, lng: 2.3253,
+    metro: "Saint-Lazare (M3, M12, M13, M14), na própria estação",
+    costAmount: "0", costCurrency: "EUR",
+    notes: "Direto do trem de volta de Giverny — o Monoprix fica dentro da própria Gare Saint-Lazare, prático pra já resolver o café da manhã de amanhã sem mais um desvio.",
+  },
+  {
+    id: uid(), date: "2026-09-15", time: "12:45", title: "Jardim de Luxemburgo (piquenique)", type: "passeio",
     address: "Jardin du Luxembourg, 75006 Paris", lat: 48.8462, lng: 2.3372,
     metro: "Luxembourg (RER B), ~2 min a pé — ou Odéon (M4, M10), ~8 min a pé",
     costAmount: "0", costCurrency: "EUR",
     notes: "Parque público gratuito — visita e piquenique logo depois de comprar o lanche na Liberté, sentados nas cadeiras de ferro espalhadas pelo gramado principal.",
   },
   {
-    id: uid(), date: "2026-09-15", time: "14:00", title: "GoodJo Vintage (brechó de luxo)", type: "compras",
+    id: uid(), date: "2026-09-15", time: "13:30", title: "Panthéon (área externa)", type: "passeio",
+    address: "Place du Panthéon, 75005 Paris", lat: 48.8462, lng: 2.3464,
+    metro: "Luxembourg (RER B), ~10 min a pé",
+    costAmount: "0", costCurrency: "EUR",
+    notes: "Só a fachada neoclássica — sem entrar (tem ingresso pago pra visitar por dentro). Fica a uns 10 min a pé do Jardim de Luxemburgo, dá pra encaixar antes de seguir pro GoodJo/Kilo Shop.",
+  },
+  {
+    id: uid(), date: "2026-09-15", time: "14:15", title: "GoodJo Vintage", type: "compras",
     address: "8 Rue Dupuytren, 75006 Paris", lat: 48.8514, lng: 2.3378,
     metro: "Odéon (M4, M10), ~4 min a pé",
     costAmount: "", costCurrency: "EUR",
-    notes: "Segunda mão de luxo (Hermès, Chanel, YSL, Dior, Céline) — vale checar se precisa de horário marcado (o Instagram deles menciona atendimento 'sur rdv'). Tem uma segunda unidade em 16 Rue de la Sourdière, 75001, perto do Louvre.",
+    notes: "Segunda mão de luxo (Hermès, Chanel, YSL, Dior, Céline) — vale checar se precisa de horário marcado (o Instagram deles menciona atendimento 'sur rdv'). Boas pedidas: lenços de seda Hermès (entrada mais acessível na marca) e bolsas pequenas/clutches vintage. Tem uma segunda unidade em 16 Rue de la Sourdière, 75001, perto do Louvre.",
   },
   {
-    id: uid(), date: "2026-09-15", time: "14:45", title: "Kilo Shop Paris Saint-Germain (brechó)", type: "compras",
+    id: uid(), date: "2026-09-15", time: "15:00", title: "Kilo Shop Saint-Germain", type: "compras",
     address: "125 Boulevard Saint-Germain, 75006 Paris", lat: 48.8517, lng: 2.3387,
     metro: "Odéon (M4, M10), ~5 min a pé",
     costAmount: "", costCurrency: "EUR",
-    notes: "Vende por peso — mesma rede da opção que já tinha no Marais, essa unidade fica em Saint-Germain, ali do lado do Jardim de Luxemburgo.",
+    notes: "Vende por peso — mesma rede da opção que já tinha no Marais, essa unidade fica em Saint-Germain, ali do lado do Jardim de Luxemburgo. Boas pedidas: jeans vintage (Levi's/Wrangler) e camisas de time/banda — costuma sair mais barato que comprar peça por peça, já que o preço é por quilo.",
+  },
+  {
+    id: uid(), date: "2026-09-15", time: "15:45", title: "Provar cosméticos na City Pharma", type: "compras",
+    address: "26 Rue du Four, 75006 Paris", lat: 48.8514, lng: 2.3328,
+    metro: "Mabillon (M10) ou Saint-Germain-des-Prés (M4)",
+    costAmount: "0", costCurrency: "EUR",
+    notes: "Testa os produtos de farmácia francesa (Bioderma, Nuxe, La Roche-Posay, Caudalie) direto na loja — não precisa comprar tudo hoje, dá pra ir anotando o que quer levar e decidir a quantidade final mais perto da volta.",
+  },
+  {
+    id: uid(), date: "2026-09-15", time: "16:15", title: "Monoprix Rennes (compras pra manhã)", type: "compras",
+    address: "50 Rue de Rennes, 75006 Paris", lat: 48.8496, lng: 2.3299,
+    metro: "Saint-Sulpice (M4), ~3 min a pé",
+    costAmount: "0", costCurrency: "EUR",
+    notes: "Passa aqui antes de voltar pro hotel pra ter café/pão/fruta prontos amanhã de manhã — dia de Giverny começa cedo.",
+  },
+  {
+    id: uid(), date: "2026-09-15", time: "18:30", title: "Jantar em Saint-Germain-des-Prés", type: "restaurante",
+    address: "Saint-Germain-des-Prés, 75006 Paris", lat: 48.8535, lng: 2.334,
+    metro: "Saint-Germain-des-Prés (M4)",
+    costAmount: "30", costCurrency: "EUR",
+    notes: "Qualquer bistrô das ruazinhas ao redor da igreja resolve bem — região cheia de opções de qualidade, sem precisar reservar com muita antecedência.",
+  },
+  {
+    id: uid(), date: "2026-09-17", time: "10:00", title: "Café da manhã em Batignolles", type: "restaurante",
+    address: "Batignolles, 75017 Paris", lat: 48.8837, lng: 2.3226,
+    metro: "Rome (M2)",
+    costAmount: "12", costCurrency: "EUR",
+    notes: "Última manhã tranquila pertinho do hotel, antes do checkout ao meio-dia — qualquer padaria da região resolve.",
+  },
+  {
+    id: uid(), date: "2026-09-17", time: "11:00", title: "Checkout do LALA Hôtel (malas na recepção)", type: "hospedagem",
+    address: "3 Rue Darcet, 17º arr., 75017 Paris", lat: 48.8847, lng: 2.3218,
+    metro: "Rome (M2), ~6 min a pé",
+    costAmount: "0", costCurrency: "EUR",
+    notes: "Checkout no horário padrão do hotel (11h — confirme na reserva se for diferente). Deixa as malas guardadas na recepção e segue aproveitando a cidade o resto do dia, sem precisar carregar nada.",
+  },
+  {
+    id: uid(), date: "2026-09-17", time: "12:30", title: "Almoço livre", type: "restaurante",
+    address: "", lat: null, lng: null, metro: "",
+    costAmount: "20", costCurrency: "EUR",
+    notes: "Último almoço em Paris — aproveite pra revisitar algum lugar querido dos dias anteriores, ou descobrir algo novo perto de onde estiver.",
+  },
+  {
+    id: uid(), date: "2026-09-17", time: "14:30", title: "Le Butter Shop (provar manteigas)", type: "compras",
+    address: "5 Rue Bouchut, 75015 Paris", lat: 48.8467, lng: 2.3078,
+    metro: "Ségur (M10) ou Sèvres-Lecourbe (M6), a conferir a mais próxima",
+    costAmount: "0", costCurrency: "EUR",
+    notes: "Empório gourmet nota 5,0 — vale a pena bem no fim da viagem, já que aqui é quando decide de vez qual manteiga (e o que mais) levar pra casa, depois de já ter provado na Breizh Café e na Grande Épicerie. Fica no 15º, mais longe do hotel — reserve um tempinho de deslocamento. Confirme o horário de funcionamento mais perto da data, é um empório pequeno.",
+  },
+  {
+    id: uid(), date: "2026-09-17", time: "17:00", title: "Monoprix (compras pra manhã do voo)", type: "compras",
+    address: "Place de Clichy, 75017/75008 Paris", lat: 48.883, lng: 2.3273,
+    metro: "Place de Clichy (M2, M13), na saída",
+    costAmount: "0", costCurrency: "EUR",
+    notes: "Última parada antes do traslado pro hotel do aeroporto — o voo de volta sai às 8h15 de sexta, bem cedo, então vale já ter café da manhã em mãos.",
+  },
+  {
+    id: uid(), date: "2026-09-17", time: "18:00", title: "Último jantar em Batignolles", type: "restaurante",
+    address: "Batignolles, 75017 Paris", lat: 48.8837, lng: 2.3226,
+    metro: "Rome (M2)",
+    costAmount: "25", costCurrency: "EUR",
+    notes: "Fecha a viagem com um jantar tranquilo pertinho do hotel, antes de pegar as malas e seguir pro aeroporto.",
+  },
+  {
+    id: uid(), date: "2026-09-17", time: "19:00", title: "Retirar as malas no LALA Hôtel", type: "hospedagem",
+    address: "3 Rue Darcet, 17º arr., 75017 Paris", lat: 48.8847, lng: 2.3218,
+    metro: "Rome (M2), ~6 min a pé",
+    costAmount: "0", costCurrency: "EUR",
+    notes: "Passa pra pegar as malas guardadas desde o checkout das 11h.",
+  },
+  {
+    id: uid(), date: "2026-09-17", time: "19:30", title: "Traslado para o hotel do aeroporto", type: "transporte",
+    address: "", lat: null, lng: null, metro: "",
+    costAmount: "", costCurrency: "EUR",
+    notes: "Hotel do aeroporto é só pra dormir essa noite — chegando à noite, sem compromisso, já que amanhã o voo sai bem cedo.",
+  },
+  {
+    id: uid(), date: "2026-09-18", time: "04:00", title: "Acordar e se preparar", type: "transporte",
+    address: "", lat: null, lng: null, metro: "",
+    costAmount: "0", costCurrency: "EUR",
+    notes: "Voo KLM 08h15 — com validação de tax free antes do check-in, o ideal é sair do hotel já com tudo pronto.",
+  },
+  {
+    id: uid(), date: "2026-09-18", time: "04:30", title: "Checkout do hotel do aeroporto", type: "hospedagem",
+    address: "", lat: null, lng: null, metro: "",
+    costAmount: "0", costCurrency: "EUR",
+    notes: "Checkout rápido — se o hotel for servido pelo CDGVal (monotrilho gratuito), o trajeto até o terminal é rápido, mas sempre com folga.",
+  },
+  {
+    id: uid(), date: "2026-09-18", time: "05:00", title: "Validar tax free (PABLO) no aeroporto", type: "transporte",
+    address: "Aéroport Paris-Charles de Gaulle, Terminal (confirmar no bilhete)", lat: 49.0097, lng: 2.5479,
+    metro: "", costAmount: "0", costCurrency: "EUR",
+    notes: "A validação da détaxe (Longchamp, Sabre e o que mais tiver o formulário) precisa ser feita ANTES de despachar a bagagem, nos terminais eletrônicos PABLO ou no balcão de alfândega — reserve uns 30-40 min pra isso, especialmente se pegar fila.",
+  },
+  {
+    id: uid(), date: "2026-09-18", time: "05:30", title: "Check-in e despacho de bagagem (KLM)", type: "transporte",
+    address: "", lat: null, lng: null, metro: "",
+    costAmount: "0", costCurrency: "EUR",
+    notes: "Depois da détaxe validada, segue pro check-in normal. Voo KLM 2006, conexão em Amsterdã (chega 09h40, sai 13h00 rumo a GRU).",
+  },
+  {
+    id: uid(), date: "2026-09-18", time: "07:45", title: "Embarque", type: "transporte",
+    address: "", lat: null, lng: null, metro: "",
+    costAmount: "0", costCurrency: "EUR",
+    notes: "Decolagem às 8h15. Essa é a viagem de volta — sem mais programação depois do embarque.",
   },
 ];
 
@@ -806,12 +1152,12 @@ const DAY_PLANS = {
     narrative: "Pouso em CDG às 11h55, desembarque + traslado até o hotel (~1h-1h30) — chegada prevista por volta das 13h30-14h. Deixar as malas no LALA Hôtel e, se o cansaço permitir, aproveitar que Montmartre fica pertinho pra fazer o passeio da Amélie Poulain (Café des Deux Moulins, mercearia do filme e a cabine de fotos) e terminar vendo o pôr do sol no Sacré-Cœur. Se preferir descansar, dá pra remarcar essa parte pra outro dia.",
   },
   "2026-09-12": {
-    title: "Sáb. — Torre Eiffel + Louvre",
-    narrative: "Manhã cedo dedicada a fotos sem multidão: Trocadéro às 7h (melhor vista da torre inteira), desce pra Torre Eiffel/Champ de Mars às 7h30, passa pela Pont de Bir-Hakeim (outro point fotogênico, aparece em 'Inception') e segue pro Louvre às 9h, ainda antes dos grandes grupos de turistas. À tarde, uma caminhada pelos Champs-Élysées até o Arco do Triunfo, com uma parada nos Jardins des Champs-Élysées (parque) no caminho de volta. Pra fechar o dia, jantar/lanche tipo piquenique nas margens do Sena perto do Pont Alexandre III, vendo o pôr do sol e a torre iluminada à distância.",
+    title: "Sáb. — Torre Eiffel",
+    narrative: "Saída do hotel de táxi às 6h pra chegar na Rue de Camoëns até as 6h30 — ponto clássico de foto da torre emoldurada pela escadaria de ferro, e sem ninguém por perto essa hora. Depois desce pra Torre Eiffel/Champ de Mars às 7h15, e passa pela Pont de Bir-Hakeim às 8h (outro point fotogênico, aparece em 'Inception'). À tarde, uma caminhada pelos Champs-Élysées até o Arco do Triunfo, com uma parada nos Jardins des Champs-Élysées (parque) no caminho de volta. Pra fechar o dia, jantar/lanche tipo piquenique nas margens do Sena perto do Pont Alexandre III, vendo o pôr do sol e a torre iluminada à distância.",
   },
   "2026-09-13": {
     title: "Dom. — Marais + roteiro \"Before Sunset\"",
-    narrative: "Começa às 7h com fotos tranquilas na Notre-Dame/Île de la Cité, antes da cidade acordar. No Marais as lojas costumam abrir aos domingos — mas boa parte só na parte da tarde. Às 10h, o passeio de 'Before Sunset': começa na livraria Shakespeare and Company (frente à Notre-Dame), segue pela Rue Saint-Julien le Pauvre e Rue Galande, atravessa o Sena e chega ao Marais pela Rue des Jardins Saint-Paul. Pro almoço rápido antes das compras, L'As du Fallafel ou o Hank Burger (vegano) resolvem sem precisar de garçom — ver aba Alimentação. À tarde, Sabre (talheres, a partir das 13h30), os brechós Free'p'Star (a partir das 15h) e a Uniqlo do Marais (a partir das 16h30). Volta ao hotel até as 20h.",
+    narrative: "Começa às 6h30 no Louvre (pátio e pirâmide, fotos sem ninguém por perto), seguindo às 7h15 pra Notre-Dame/Île de la Cité, antes da cidade acordar. No Marais as lojas costumam abrir aos domingos — mas boa parte só na parte da tarde. Às 10h, o passeio de 'Before Sunset': começa na livraria Shakespeare and Company (frente à Notre-Dame), segue pela Rue Saint-Julien le Pauvre e Rue Galande, atravessa o Sena e chega ao Marais pela Rue des Jardins Saint-Paul. Pro almoço rápido antes das compras, L'As du Fallafel ou o Hank Burger (vegano) resolvem sem precisar de garçom — ver aba Alimentação. À tarde, Sabre (talheres, a partir das 13h30), os brechós Free'p'Star (a partir das 15h) e a Uniqlo do Marais e a Muji (a partir das 16h30, uma do lado da outra na mesma rua). Volta ao hotel até as 20h.",
   },
   "2026-09-14": {
     title: "Seg. — Parc Monceau + Longchamp",
@@ -827,7 +1173,11 @@ const DAY_PLANS = {
   },
   "2026-09-17": {
     title: "Qui. — Checkout + traslado",
-    narrative: "Checkout do LALA Hôtel. Aproveite a manhã/tarde livre pra últimas compras ou revisitar algum lugar querido. No fim do dia, traslado para o hotel do aeroporto (a confirmar).",
+    narrative: "Checkout do LALA Hôtel às 11h, deixando as malas guardadas na recepção pra continuar aproveitando a cidade sem carregar nada. À noite, retira as malas e segue pro hotel do aeroporto, só pra dormir.",
+  },
+  "2026-09-18": {
+    title: "Sex. — Volta ao Brasil",
+    narrative: "Dia só de viagem de volta. Acordar 4h, checkout do hotel do aeroporto às 4h30, validar a détaxe (tax free) no PABLO antes de despachar bagagem, check-in KLM, e embarque às 7h45 pro voo das 8h15 (conexão em Amsterdã).",
   },
 };
 
@@ -856,7 +1206,7 @@ function getSector(address) {
   if (/75017/.test(address)) return "Batignolles / Clichy (17e)";
   if (/75018/.test(address)) return "Montmartre (18e)";
   if (/75006/.test(address)) return "Saint-Germain / Luxembourg (6e)";
-  if (/75008/.test(address)) return "Champs-Élysées (8e)";
+  if (/75008|75009/.test(address)) return "Champs-Élysées (8e)";
   return "Outra região";
 }
 
@@ -958,6 +1308,7 @@ export default function ParisTripPlanner() {
   const [wishlist, setWishlist] = useState([]);
   const [food, setFood] = useState([]);
   const [souvenirs, setSouvenirs] = useState([]);
+  const [gifts, setGifts] = useState([]);
 
   const notify = useCallback((msg) => {
     setToast(msg);
@@ -966,7 +1317,7 @@ export default function ParisTripPlanner() {
 
   useEffect(() => {
     (async () => {
-      const [b, i, l, o, w, fd, sv] = await Promise.all([
+      const [b, i, l, o, w, fd, sv, gf] = await Promise.all([
         loadKey("paris-trip:budget", defaultBudget),
         loadKey("paris-trip:itinerary", defaultItinerary),
         loadKey("paris-trip:logistics", emptyLogistics),
@@ -974,6 +1325,7 @@ export default function ParisTripPlanner() {
         loadKey("paris-trip:wishlist", defaultWishlist),
         loadKey("paris-trip:food", defaultFood),
         loadKey("paris-trip:souvenirs", defaultSouvenirs),
+        loadKey("paris-trip:gifts", defaultGifts),
       ]);
       setBudget(b);
       setItinerary(i);
@@ -986,6 +1338,7 @@ export default function ParisTripPlanner() {
       setWishlist(w);
       setFood(fd);
       setSouvenirs(sv);
+      setGifts(gf);
       setReady(true);
     })();
   }, []);
@@ -997,6 +1350,7 @@ export default function ParisTripPlanner() {
   useEffect(() => { if (ready) saveKey("paris-trip:wishlist", wishlist); }, [wishlist, ready]);
   useEffect(() => { if (ready) saveKey("paris-trip:food", food); }, [food, ready]);
   useEffect(() => { if (ready) saveKey("paris-trip:souvenirs", souvenirs); }, [souvenirs, ready]);
+  useEffect(() => { if (ready) saveKey("paris-trip:gifts", gifts); }, [gifts, ready]);
 
   if (!ready) {
     return (
@@ -1019,17 +1373,16 @@ export default function ParisTripPlanner() {
 
       <main className="max-w-2xl mx-auto px-4 pb-24 pt-6">
         {tab === "overview" && (
-          <Overview budget={budget} itinerary={itinerary} logistics={logistics} outfits={outfits} wishlist={wishlist} goTo={setTab} />
+          <Overview budget={budget} itinerary={itinerary} logistics={logistics} outfits={outfits} wishlist={wishlist} gifts={gifts} goTo={setTab} />
         )}
         {tab === "budget" && <BudgetTab budget={budget} itinerary={itinerary} />}
         {tab === "itinerary" && <ItineraryTab itinerary={itinerary} />}
         {tab === "map" && <MapTab itinerary={itinerary} logistics={logistics} />}
         {tab === "food" && <FoodTab food={food} />}
         {tab === "health" && <HealthTab />}
-        {tab === "meds" && <MedicationsTab />}
         {tab === "logistics" && <LogisticsTab logistics={logistics} />}
-        {tab === "wishlist" && <WishlistTab wishlist={wishlist} />}
-        {tab === "souvenirs" && <SouvenirsTab souvenirs={souvenirs} />}
+        {tab === "compras" && <ComprasTab wishlist={wishlist} itinerary={itinerary} souvenirs={souvenirs} />}
+        {tab === "presentes" && <GiftsTab gifts={gifts} />}
         {tab === "outfits" && <OutfitsTab outfits={outfits} />}
       </main>
 
@@ -1110,12 +1463,14 @@ function NavTabs({ tab, setTab }) {
 
 /* ---------- Overview ---------- */
 
-function Overview({ budget, itinerary, logistics, outfits, wishlist, goTo }) {
+function Overview({ budget, itinerary, logistics, outfits, wishlist, gifts, goTo }) {
   const TARGET_PLANNED = 30000;
   const TARGET_MAX = 40000;
   const PEOPLE = 2;
   const COLOR_EFETIVADO = "#3B5166";
   const COLOR_PREVISTO = "#A88856";
+  const [expandedCashCategory, setExpandedCashCategory] = useState(null);
+  const [expandedGastoCategory, setExpandedGastoCategory] = useState(null);
 
   const today = new Date();
   const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
@@ -1143,34 +1498,66 @@ function Overview({ budget, itinerary, logistics, outfits, wishlist, goTo }) {
     .reduce((s, b) => s + toNumber(b.amount), 0);
   const cashAvailableEUR = totalCashEUR - cashSpentEUR;
 
-  // ----- Chart 1: Gastos (BRL) — efetivado x previsto -----
+  // ----- Chart 1: Gastos (BRL) — uma barra só, por categoria -----
   const hospedagemItems = budget.filter((b) => b.category === "Hospedagem");
-  const hospedagemEfetivado = hospedagemItems.filter((b) => !/aeroporto/i.test(b.item)).reduce((s, b) => s + toNumber(b.amount), 0);
-  const hospedagemPrevisto = hospedagemItems.filter((b) => /aeroporto/i.test(b.item)).reduce((s, b) => s + toNumber(b.amount), 0);
+  const hospedagemTotal = hospedagemItems.reduce((s, b) => s + toNumber(b.amount), 0);
   const passagemTotal = budget.filter((b) => b.category === "Passagem").reduce((s, b) => s + toNumber(b.amount), 0);
   const cambioTotal = budget.filter((b) => b.category === "Dinheiro disponível").reduce((s, b) => s + toNumber(b.amount), 0);
   const seguroTotal = budget.filter((b) => b.category === "Seguro viagem").reduce((s, b) => s + toNumber(b.amount), 0);
+  const presentesTotalEUR = gifts.reduce((s, g) => s + (g.budgetEUR || 0), 0);
+  const presentesTotalBRL = presentesTotalEUR * EUR_TO_BRL_RATE;
 
-  const gastosRows = [
-    { label: "Passagem", segments: [{ value: passagemTotal, color: COLOR_EFETIVADO }], total: passagemTotal },
-    { label: "Hospedagem", segments: [{ value: hospedagemEfetivado, color: COLOR_EFETIVADO }, { value: hospedagemPrevisto, color: COLOR_PREVISTO }], total: hospedagemEfetivado + hospedagemPrevisto },
-    { label: "Dinheiro disponível (câmbio)", segments: [{ value: cambioTotal, color: COLOR_EFETIVADO }], total: cambioTotal },
-    { label: "Seguro viagem", segments: [{ value: seguroTotal, color: COLOR_PREVISTO }], total: seguroTotal },
-  ].filter((r) => r.total > 0);
-  const gastosMax = Math.max(...gastosRows.map((r) => r.total), 1);
-  const gastosTotal = passagemTotal + hospedagemEfetivado + hospedagemPrevisto + cambioTotal + seguroTotal;
+  const gastosSegments = [
+    { label: "Passagem", value: passagemTotal, color: "#3B5166" },
+    { label: "Hospedagem", value: hospedagemTotal, color: "#A88856" },
+    { label: "Câmbio", value: cambioTotal, color: "#5B6B4E" },
+    { label: "Seguro viagem", value: seguroTotal, color: "#C97B4A" },
+    { label: "Presentes", value: presentesTotalBRL, color: "#9B2C2C" },
+  ];
+  const gastosTotal = passagemTotal + hospedagemTotal + cambioTotal + seguroTotal + presentesTotalBRL;
 
   // ----- Chart 2: Dinheiro disponível (EUR) — por categoria de uso previsto -----
-  const transporteEUR = budget.filter((b) => b.category === "Transporte local" && b.currency === "EUR").reduce((s, b) => s + toNumber(b.amount), 0);
-  const comprasEUR = wishlist.filter((w) => w.currency === "EUR").reduce((s, w) => s + toNumber(w.price) * (w.quantity || 1), 0);
-  const passeiosEUR = itinerary.filter((i) => i.costCurrency === "EUR").reduce((s, i) => s + toNumber(i.costAmount), 0);
-  const restanteEUR = Math.max(0, totalCashEUR - transporteEUR - comprasEUR - passeiosEUR);
+  const itinerarioTransporteEUR = itinerary.filter((i) => i.type === "transporte" && i.costCurrency === "EUR").reduce((s, i) => s + toNumber(i.costAmount), 0);
+  const transporteEUR = budget.filter((b) => b.category === "Transporte local" && b.currency === "EUR").reduce((s, b) => s + toNumber(b.amount), 0) + itinerarioTransporteEUR;
+  const comprasEUR = itinerary.filter((i) => i.type === "compras" && i.costCurrency === "EUR").reduce((s, i) => s + toNumber(i.costAmount), 0);
+  const alimentacaoBase = itinerary.filter((i) => i.type === "restaurante" && i.costCurrency === "EUR").reduce((s, i) => s + toNumber(i.costAmount), 0);
+  const alimentacaoEUR = alimentacaoBase * 1.12; // ~12% de margem pra bebidas, extras e imprevistos
+  const passeiosEUR = itinerary.filter((i) => i.type === "passeio" && i.costCurrency === "EUR").reduce((s, i) => s + toNumber(i.costAmount), 0);
+  const presentesEUR = gifts.reduce((s, g) => s + (g.budgetEUR || 0), 0);
+  const restanteEUR = Math.max(0, totalCashEUR - transporteEUR - comprasEUR - passeiosEUR - alimentacaoEUR - presentesEUR);
   const cashSegments = [
     { label: "Transporte", value: transporteEUR, color: "#6B655A" },
     { label: "Compras", value: comprasEUR, color: "#A88856" },
+    { label: "Alimentação", value: alimentacaoEUR, color: "#C97B4A" },
     { label: "Passeios", value: passeiosEUR, color: "#5B6B4E" },
+    { label: "Presentes", value: presentesEUR, color: "#9B2C2C" },
     { label: "Ainda não alocado", value: restanteEUR, color: "#D9D2C2" },
   ];
+
+  // ----- Divisão por pessoa — mesmas categorias de gasto, tudo convertido pra reais na cotação paga -----
+  const personCategoryColors = {
+    Passagem: "#3B5166", Hospedagem: "#A88856", Alimentação: "#C97B4A",
+    Transporte: "#6B655A", Passeios: "#5B6B4E", "Seguro viagem": "#8A6BA1",
+    Presentes: "#9B2C2C", Compras: "#7A5C61",
+  };
+  const personCommonCategories = [
+    { label: "Passagem", brl: passagemTotal, tatiRatio: 0.5 },
+    { label: "Hospedagem", brl: hospedagemTotal, tatiRatio: 0.5 },
+    { label: "Alimentação", brl: alimentacaoEUR * EUR_TO_BRL_RATE, tatiRatio: 0.4 },
+    { label: "Transporte", brl: transporteEUR * EUR_TO_BRL_RATE, tatiRatio: 0.5 },
+    { label: "Passeios", brl: passeiosEUR * EUR_TO_BRL_RATE, tatiRatio: 0.5 },
+    { label: "Seguro viagem", brl: seguroTotal, tatiRatio: 0.5 },
+    { label: "Presentes", brl: presentesTotalBRL, tatiRatio: 0.5 },
+  ].filter((c) => c.brl > 0);
+  const comprasTotalBRL = comprasEUR * EUR_TO_BRL_RATE;
+  const tatiSegments = [
+    ...personCommonCategories.map((c) => ({ label: c.label, value: c.brl * c.tatiRatio, color: personCategoryColors[c.label] })),
+    ...(comprasTotalBRL > 0 ? [{ label: "Compras", value: comprasTotalBRL, color: personCategoryColors.Compras }] : []),
+  ];
+  const diSegments = personCommonCategories.map((c) => ({ label: c.label, value: c.brl * (1 - c.tatiRatio), color: personCategoryColors[c.label] }));
+  const tatiTotalBRL = tatiSegments.reduce((s, seg) => s + seg.value, 0);
+  const diTotalBRL = diSegments.reduce((s, seg) => s + seg.value, 0);
+  const personMax = Math.max(tatiTotalBRL, diTotalBRL, 1);
 
   const nextStops = [...itinerary]
     .filter((i) => i.date)
@@ -1215,11 +1602,116 @@ function Overview({ budget, itinerary, logistics, outfits, wishlist, goTo }) {
           <p className="font-display text-[18px]">Gastos</p>
           <button onClick={() => goTo("budget")} className="text-[12px] text-[#3B5166] underline">ver orçamento</button>
         </div>
-        <p className="text-[11px] text-[#8A8375] mb-3">Total R$ {fmtMoney(gastosTotal)} — por categoria, com o que já é gasto efetivado x apenas previsto.</p>
-        <HBarChart rows={gastosRows} maxValue={gastosMax} formatValue={(v) => `R$ ${fmtMoney(v)}`} />
-        <div className="flex gap-4 mt-3 text-[11px] text-[#4A453D]">
-          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full inline-block" style={{ background: COLOR_EFETIVADO }} /> Efetivado</span>
-          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full inline-block" style={{ background: COLOR_PREVISTO }} /> Previsto</span>
+        <p className="text-[11px] text-[#8A8375] mb-3">Total R$ {fmtMoney(gastosTotal)} — toque numa categoria pra ver os itens.</p>
+        <div className="w-full h-6 rounded-full bg-[#E3DDCC] overflow-hidden flex">
+          {gastosSegments.map((seg, i) => seg.value > 0 && (
+            <div key={i} style={{ width: `${(seg.value / gastosTotal) * 100}%`, background: seg.color }} title={`${seg.label}: R$ ${fmtMoney(seg.value)}`} />
+          ))}
+        </div>
+        <div className="flex flex-wrap gap-x-3 gap-y-1.5 mt-3">
+          {gastosSegments.map((seg, i) => seg.value > 0 && (
+            <button
+              key={i}
+              onClick={() => setExpandedGastoCategory((prev) => (prev === seg.label ? null : seg.label))}
+              className={`flex items-center gap-1.5 text-[11px] px-1.5 py-0.5 rounded-sm ${expandedGastoCategory === seg.label ? "bg-[#1C1C1E]/[0.06] font-semibold text-[#1C1C1E]" : "text-[#4A453D]"}`}
+            >
+              <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ background: seg.color }} />
+              {seg.label}: R$ {fmtMoney(seg.value)}
+            </button>
+          ))}
+        </div>
+        {expandedGastoCategory && (
+          <div className="mt-3 pt-3 border-t border-[#D9D2C2] space-y-2">
+            {expandedGastoCategory === "Passagem" && (
+              budget.filter((b) => b.category === "Passagem").map((b) => (
+                <div key={b.id} className="flex justify-between text-[12px]">
+                  <span className="text-[#4A453D]">{b.item}</span>
+                  <span className="font-mono text-[#6B655A] shrink-0 ml-2">R$ {fmtMoney(toNumber(b.amount))}</span>
+                </div>
+              ))
+            )}
+            {expandedGastoCategory === "Hospedagem" && (
+              hospedagemItems.map((b) => (
+                <div key={b.id} className="flex justify-between text-[12px]">
+                  <span className="text-[#4A453D]">{b.item}</span>
+                  <span className="font-mono text-[#6B655A] shrink-0 ml-2">R$ {fmtMoney(toNumber(b.amount))}</span>
+                </div>
+              ))
+            )}
+            {expandedGastoCategory === "Câmbio" && (
+              budget.filter((b) => b.category === "Dinheiro disponível").map((b) => (
+                <div key={b.id} className="flex justify-between text-[12px]">
+                  <span className="text-[#4A453D]">{b.item}</span>
+                  <span className="font-mono text-[#6B655A] shrink-0 ml-2">R$ {fmtMoney(toNumber(b.amount))}</span>
+                </div>
+              ))
+            )}
+            {expandedGastoCategory === "Seguro viagem" && (
+              budget.filter((b) => b.category === "Seguro viagem").map((b) => (
+                <div key={b.id} className="flex justify-between text-[12px]">
+                  <span className="text-[#4A453D]">{b.item}</span>
+                  <span className="font-mono text-[#6B655A] shrink-0 ml-2">R$ {fmtMoney(toNumber(b.amount))}</span>
+                </div>
+              ))
+            )}
+            {expandedGastoCategory === "Presentes" && (
+              gifts.map((g) => (
+                <div key={g.id} className="flex justify-between text-[12px]">
+                  <span className="text-[#4A453D]">{g.person}</span>
+                  <span className="font-mono text-[#6B655A] shrink-0 ml-2">R$ {fmtMoney((g.budgetEUR || 0) * EUR_TO_BRL_RATE)}</span>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+      </SectionCard>
+
+      <SectionCard>
+        <p className="font-display text-[18px] mb-1">Divisão por pessoa</p>
+        <p className="text-[11px] text-[#8A8375] mb-3">
+          Mesmas categorias do gráfico de Gastos, divididas 50/50 — exceto Alimentação, que fica 40% Tati / 60%
+          Di. Tudo convertido pra reais na cotação já paga (R$ {EUR_TO_BRL_RATE.toFixed(3)}/€). Só na Tati entra
+          o valor de Compras (100%).
+        </p>
+        <div className="space-y-4">
+          <div>
+            <div className="flex justify-between text-[12px] mb-1">
+              <span className="text-[#4A453D] font-medium">Tati</span>
+              <span className="font-mono text-[#3B5166]">R$ {fmtMoney(tatiTotalBRL)}</span>
+            </div>
+            <div className="w-full h-6 rounded-full bg-[#E3DDCC] overflow-hidden flex">
+              {tatiSegments.map((seg, i) => seg.value > 0 && (
+                <div key={i} style={{ width: `${(seg.value / personMax) * 100}%`, background: seg.color }} title={`${seg.label}: R$ ${fmtMoney(seg.value)}`} />
+              ))}
+            </div>
+            <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1.5">
+              {tatiSegments.map((seg, i) => (
+                <span key={i} className="flex items-center gap-1 text-[10px] text-[#4A453D]">
+                  <span className="w-2 h-2 rounded-full inline-block" style={{ background: seg.color }} />
+                  {seg.label}: R$ {fmtMoney(seg.value)}
+                </span>
+              ))}
+            </div>
+          </div>
+          <div>
+            <div className="flex justify-between text-[12px] mb-1">
+              <span className="text-[#4A453D] font-medium">Di</span>
+              <span className="font-mono text-[#3B5166]">R$ {fmtMoney(diTotalBRL)}</span>
+            </div>
+            <div className="w-full h-6 rounded-full bg-[#E3DDCC] overflow-hidden flex">
+              {diSegments.map((seg, i) => seg.value > 0 && (
+                <div key={i} style={{ width: `${(seg.value / personMax) * 100}%`, background: seg.color }} title={`${seg.label}: R$ ${fmtMoney(seg.value)}`} />
+              ))}
+            </div>
+            <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1.5">
+              {diSegments.map((seg, i) => (
+                <span key={i} className="flex items-center gap-1 text-[10px] text-[#4A453D]">
+                  <span className="w-2 h-2 rounded-full inline-block" style={{ background: seg.color }} />
+                  {seg.label}: R$ {fmtMoney(seg.value)}
+                </span>
+              ))}
+            </div>
+          </div>
         </div>
       </SectionCard>
 
@@ -1228,7 +1720,7 @@ function Overview({ budget, itinerary, logistics, outfits, wishlist, goTo }) {
           <p className="font-display text-[18px]">Dinheiro disponível</p>
           <button onClick={() => goTo("budget")} className="text-[12px] text-[#3B5166] underline">ver orçamento</button>
         </div>
-        <p className="text-[11px] text-[#8A8375] mb-3">€ {fmtMoney(totalCashEUR)} comprados — como já está sendo alocado.</p>
+        <p className="text-[11px] text-[#8A8375] mb-3">€ {fmtMoney(totalCashEUR)} comprados — toque numa categoria pra ver os itens.</p>
         <div className="w-full h-6 rounded-full bg-[#E3DDCC] overflow-hidden flex">
           {cashSegments.map((seg, i) => seg.value > 0 && (
             <div key={i} style={{ width: `${(seg.value / totalCashEUR) * 100}%`, background: seg.color }} title={`${seg.label}: € ${fmtMoney(seg.value)}`} />
@@ -1236,12 +1728,80 @@ function Overview({ budget, itinerary, logistics, outfits, wishlist, goTo }) {
         </div>
         <div className="flex flex-wrap gap-x-3 gap-y-1.5 mt-3">
           {cashSegments.map((seg, i) => (
-            <span key={i} className="flex items-center gap-1.5 text-[11px] text-[#4A453D]">
+            <button
+              key={i}
+              onClick={() => setExpandedCashCategory((prev) => (prev === seg.label ? null : seg.label))}
+              className={`flex items-center gap-1.5 text-[11px] px-1.5 py-0.5 rounded-sm ${expandedCashCategory === seg.label ? "bg-[#1C1C1E]/[0.06] font-semibold text-[#1C1C1E]" : "text-[#4A453D]"}`}
+            >
               <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ background: seg.color }} />
               {seg.label}: € {fmtMoney(seg.value)}
-            </span>
+            </button>
           ))}
         </div>
+        {expandedCashCategory && (
+          <div className="mt-3 pt-3 border-t border-[#D9D2C2] space-y-2">
+            {expandedCashCategory === "Transporte" && (
+              <>
+                {budget.filter((b) => b.category === "Transporte local" && b.currency === "EUR").map((b) => (
+                  <div key={b.id} className="flex justify-between text-[12px]">
+                    <span className="text-[#4A453D]">{b.item}</span>
+                    <span className="font-mono text-[#6B655A] shrink-0 ml-2">€ {fmtMoney(toNumber(b.amount))}</span>
+                  </div>
+                ))}
+                {itinerary.filter((i) => i.type === "transporte" && i.costCurrency === "EUR" && toNumber(i.costAmount) > 0).map((i) => (
+                  <div key={i.id} className="flex justify-between text-[12px]">
+                    <span className="text-[#4A453D]">{i.title}</span>
+                    <span className="font-mono text-[#6B655A] shrink-0 ml-2">€ {fmtMoney(toNumber(i.costAmount))}</span>
+                  </div>
+                ))}
+              </>
+            )}
+            {expandedCashCategory === "Compras" && (
+              itinerary.filter((i) => i.type === "compras" && i.costCurrency === "EUR" && toNumber(i.costAmount) > 0).map((i) => (
+                <div key={i.id} className="flex justify-between text-[12px]">
+                  <span className="text-[#4A453D]">{i.title}</span>
+                  <span className="font-mono text-[#6B655A] shrink-0 ml-2">€ {fmtMoney(toNumber(i.costAmount))}</span>
+                </div>
+              ))
+            )}
+            {expandedCashCategory === "Alimentação" && (
+              <>
+                {itinerary.filter((i) => i.type === "restaurante" && i.costCurrency === "EUR" && toNumber(i.costAmount) > 0).map((i) => (
+                  <div key={i.id} className="flex justify-between text-[12px]">
+                    <span className="text-[#4A453D]">{i.title}</span>
+                    <span className="font-mono text-[#6B655A] shrink-0 ml-2">€ {fmtMoney(toNumber(i.costAmount))}</span>
+                  </div>
+                ))}
+                <div className="flex justify-between text-[12px] pt-1 border-t border-[#D9D2C2]">
+                  <span className="text-[#8A8375] italic">Margem de ~12% (bebidas, extras, imprevistos)</span>
+                  <span className="font-mono text-[#8A8375] shrink-0 ml-2">€ {fmtMoney(alimentacaoEUR - alimentacaoBase)}</span>
+                </div>
+              </>
+            )}
+            {expandedCashCategory === "Passeios" && (
+              itinerary.filter((i) => i.type === "passeio" && i.costCurrency === "EUR" && toNumber(i.costAmount) > 0).map((i) => (
+                <div key={i.id} className="flex justify-between text-[12px]">
+                  <span className="text-[#4A453D]">{i.title}</span>
+                  <span className="font-mono text-[#6B655A] shrink-0 ml-2">€ {fmtMoney(toNumber(i.costAmount))}</span>
+                </div>
+              ))
+            )}
+            {expandedCashCategory === "Presentes" && (
+              gifts.map((g) => (
+                <div key={g.id} className="flex justify-between text-[12px]">
+                  <span className="text-[#4A453D]">{g.person} ({g.giftType})</span>
+                  <span className="font-mono text-[#6B655A] shrink-0 ml-2">€ {fmtMoney(g.budgetEUR)}</span>
+                </div>
+              ))
+            )}
+            {expandedCashCategory === "Ainda não alocado" && (
+              <p className="text-[12px] text-[#6B655A] leading-relaxed">
+                Esse valor ainda não tem destino certo — sobra depois de somar transporte, compras e passeios já
+                estimados. Fica de reserva pra imprevistos ou pra decidir depois.
+              </p>
+            )}
+          </div>
+        )}
       </SectionCard>
 
       <SectionCard>
@@ -1658,7 +2218,6 @@ function ItineraryTab({ itinerary }) {
             <p className="text-[11px] tracking-[0.08em] uppercase text-[#6B655A] mb-0.5">
               {formatDayLabel(date)}{plan ? ` — ${plan.title.replace(/^[A-Za-zç.]+\.\s—\s/, "")}` : ""}
             </p>
-            {plan && <p className="text-[12px] text-[#4A453D] leading-relaxed mb-3">{plan.narrative}</p>}
             {items.length === 0 ? (
               <p className="text-[11px] text-[#8A8375] italic">Sem atividade específica ainda — me diga se quiser incluir algo nesse dia.</p>
             ) : (
@@ -1689,9 +2248,9 @@ function ItineraryTab({ itinerary }) {
 
       <SectionCard>
         <p className="text-[11px] text-[#8A8375] leading-relaxed">
-          18/09 é só o voo de volta — sem programação. O domingo prioriza o Marais, que depende do dia da semana
-          pra funcionar bem; os demais seguem o padrão de sair às 7h pros pontos turísticos (só fotos), lojas/cafés
-          no horário comercial, e volta ao hotel até as 20h.
+          18/09 é o dia da viagem de volta, com o cronograma de checkout do hotel do aeroporto + tax free + embarque.
+          O domingo prioriza o Marais, que depende do dia da semana pra funcionar bem; os demais seguem o padrão de
+          sair às 7h pros pontos turísticos (só fotos), lojas/cafés no horário comercial, e volta ao hotel até as 20h.
         </p>
       </SectionCard>
 
@@ -2164,8 +2723,38 @@ function FlightCard({ label, flight }) {
           <ReadRow label="De" value={flight.from} />
           <ReadRow label="Para" value={flight.to} />
         </div>
+        <ReadRow label="Assentos" value={flight.seats} />
+        <ReadRow label="Bagagem" value={flight.baggage} />
+        <ReadRow label="Refeições" value={flight.meals} />
         <ReadRow label="Localizador" value={flight.confirmation} />
       </div>
+
+      {flight.segments && flight.segments.length > 0 && (
+        <div className="mt-4 pt-4 border-t border-[#D9D2C2]">
+          <p className="text-[11px] tracking-[0.08em] uppercase text-[#6B655A] mb-2.5">Detalhe da conexão, trecho a trecho</p>
+          <div className="space-y-3">
+            {flight.segments.map((seg, i) => (
+              <div key={i} className="bg-white/60 border border-[#D9D2C2] rounded-sm px-3 py-2.5">
+                <p className="text-[12px] font-medium text-[#1C1C1E]">
+                  {seg.leg}{seg.flightNumber ? ` — voo ${seg.flightNumber}` : ""}
+                </p>
+                {seg.from && seg.to && (
+                  <p className="text-[12px] text-[#4A453D] mt-1">
+                    {seg.from} {seg.depart} → {seg.to} {seg.arrive} <span className="text-[#8A8375]">({seg.date})</span>
+                  </p>
+                )}
+                {!seg.from && (
+                  <p className="text-[12px] text-[#4A453D] mt-1">
+                    {seg.depart} → {seg.arrive} <span className="text-[#8A8375]">({seg.date})</span>
+                  </p>
+                )}
+                {seg.terminal && <p className="text-[11px] text-[#6B655A] mt-1.5 leading-relaxed">{seg.terminal}</p>}
+                {seg.procedure && <NoteList text={seg.procedure} />}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </SectionCard>
   );
 }
@@ -2255,7 +2844,8 @@ function HealthTab() {
     <div className="space-y-4">
       <SectionCard>
         <p className="text-[13px] text-[#4A453D] leading-relaxed">
-          Farmácias e hospitais de referência perto dos lugares do roteiro, mais os números de emergência da França.
+          Farmácias e hospitais de referência perto dos lugares do roteiro, números de emergência da França, e o
+          que levar de medicamento.
         </p>
       </SectionCard>
 
@@ -2323,40 +2913,23 @@ function HealthTab() {
         </div>
       </div>
 
-      <SectionCard>
-        <p className="text-[12px] text-[#6B655A] leading-relaxed">
-          Este app é só de leitura — me avisa se quiser que eu mapeie mais algum lugar de saúde.
-        </p>
-      </SectionCard>
-    </div>
-  );
-}
-
-/* ---------- Medications ---------- */
-
-function MedicationsTab() {
-  return (
-    <div className="space-y-4">
-      <SectionCard>
-        <p className="font-display text-[18px] mb-1">{MEDICATION_GENERAL_RULE.title}</p>
-        <p className="text-[12px] text-[#4A453D] leading-relaxed">{MEDICATION_GENERAL_RULE.text}</p>
-      </SectionCard>
-
-      <SectionCard>
-        <p className="text-[12px] text-[#4A453D] leading-relaxed">
+      <div>
+        <p className="text-[11px] tracking-[0.08em] uppercase text-[#6B655A] mb-2 mt-2 flex items-center gap-1.5"><Pill size={12} /> Medicamentos pra levar</p>
+        <SectionCard>
+          <p className="font-display text-[16px] mb-1">{MEDICATION_GENERAL_RULE.title}</p>
+          <p className="text-[12px] text-[#4A453D] leading-relaxed">{MEDICATION_GENERAL_RULE.text}</p>
+        </SectionCard>
+        <p className="text-[11px] text-[#6B655A] leading-relaxed mt-2 mb-2.5">
           Pra todos os itens: mantenha na embalagem/caixa original, leve na bagagem de mão, e some só a
           quantidade necessária pro período da viagem (com uma pequena folga). Não é aconselhamento médico —
           confirme com seu médico antes de viajar, principalmente pro baricitinibe e a sertralina.
         </p>
-      </SectionCard>
-
-      <div className="space-y-2.5">
-        {MEDICATIONS.map((m) => (
-          <div key={m.id} className="bg-white/60 border border-[#D9D2C2] rounded-sm px-3 py-2.5">
-            <div className="flex items-center justify-between gap-2">
+        <div className="space-y-2.5">
+          {MEDICATIONS.map((m) => (
+            <div key={m.id} className="bg-white/60 border border-[#D9D2C2] rounded-sm px-3 py-2.5">
               <p className="text-[13px] font-medium">{m.name}</p>
               <span
-                className="text-[10px] px-1.5 py-0.5 rounded-full font-medium shrink-0 text-right"
+                className="text-[10px] px-1.5 py-0.5 rounded-full font-medium inline-block mt-1"
                 style={{
                   background: m.prescriptionNeeded.startsWith("Recomendado") ? "#9B2C2C1f" : "#5B6B4E1f",
                   color: m.prescriptionNeeded.startsWith("Recomendado") ? "#9B2C2C" : "#5B6B4E",
@@ -2364,65 +2937,16 @@ function MedicationsTab() {
               >
                 {m.prescriptionNeeded}
               </span>
+              <p className="text-[11px] text-[#8A8375] mt-0.5">{m.use}</p>
+              <NoteList text={m.notes} />
             </div>
-            <p className="text-[11px] text-[#8A8375] mt-0.5">{m.use}</p>
-            <NoteList text={m.notes} />
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
       <SectionCard>
         <p className="text-[12px] text-[#6B655A] leading-relaxed">
-          Este app é só de leitura — me manda outros medicamentos que queira que eu inclua aqui.
-        </p>
-      </SectionCard>
-    </div>
-  );
-}
-
-/* ---------- Souvenirs ---------- */
-
-function SouvenirsTab({ souvenirs }) {
-  const grouped = SOUVENIR_CATEGORIES.map((c) => ({ ...c, items: souvenirs.filter((s) => s.category === c.id) })).filter((g) => g.items.length > 0);
-
-  return (
-    <div className="space-y-4">
-      <SectionCard>
-        <p className="text-[13px] text-[#4A453D] leading-relaxed">
-          Ideias de lembranças pra levar e onde comprar — organizado por quem é o presente.
-        </p>
-      </SectionCard>
-
-      {souvenirs.length === 0 && <EmptyHint text="Nenhum souvenir mapeado ainda." />}
-
-      {grouped.map((g) => (
-        <div key={g.id}>
-          <p className="text-[11px] tracking-[0.08em] uppercase text-[#6B655A] mb-0.5">{g.label}</p>
-          {g.forWhom && <p className="text-[11px] text-[#A88856] mb-2">{g.forWhom}</p>}
-          <div className="space-y-2.5">
-            {g.items.map((s) => (
-              <div key={s.id} className="bg-white/60 border border-[#D9D2C2] rounded-sm px-3 py-2.5">
-                <p className="text-[13px] font-medium">{s.item}</p>
-                <p className="text-[11px] text-[#8A8375] mt-0.5">{s.store}</p>
-                <p className="text-[11px] text-[#8A8375] mt-1 flex items-center gap-1">
-                  <MapPin size={11} className="shrink-0" /> {s.address}
-                </p>
-                {s.metro && <p className="text-[11px] text-[#3B5166] mt-0.5">🚇 {s.metro}</p>}
-                <NoteList text={s.notes} />
-                {s.link && (
-                  <a href={s.link} target="_blank" rel="noreferrer" className="text-[11px] text-[#3B5166] underline mt-1.5 inline-block">
-                    {s.linkLabel || "ver site"} ↗
-                  </a>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      ))}
-
-      <SectionCard>
-        <p className="text-[12px] text-[#6B655A] leading-relaxed">
-          Este app é só de leitura — me manda outras ideias de souvenir ou pra quem que eu adiciono aqui.
+          Este app é só de leitura — me avisa se quiser que eu mapeie mais algum lugar de saúde ou medicamento.
         </p>
       </SectionCard>
     </div>
@@ -2431,66 +2955,396 @@ function SouvenirsTab({ souvenirs }) {
 
 /* ---------- Wishlist ---------- */
 
-function WishlistTab({ wishlist }) {
-  const totalsByCurrency = wishlist.reduce((acc, w) => {
-    const total = toNumber(w.price) * (w.quantity || 1);
-    acc[w.currency] = (acc[w.currency] || 0) + total;
-    return acc;
-  }, {});
+const defaultGifts = [
+  {
+    id: uid(), person: "Sueli", budgetEUR: 20, giftType: "Chá",
+    suggestion: "Mariage Frères (lata ~100g, €14-18) — Marais, 30 Rue du Bourg-Tibourg",
+  },
+  {
+    id: uid(), person: "Eduardo", budgetEUR: 10, giftType: "Café",
+    suggestion: "Terres de Café, pacote de grãos (~€9-12) — Batignolles, 33 Rue des Batignolles",
+  },
+  {
+    id: uid(), person: "Larissa", budgetEUR: 20, giftType: "A definir",
+    suggestion: "Sugestão: chá Nina's Marie-Antoinette (lata ~100g, €13-16) — 29 Rue Danielle Casanova",
+  },
+  {
+    id: uid(), person: "Jonny", budgetEUR: 4, giftType: "Chocolate",
+    suggestion: "Tablete de chocolate francês (Michel Cluizel ou Lindt Excellence, ~€3-4) — qualquer Monoprix",
+  },
+  {
+    id: uid(), person: "Ivone", budgetEUR: 20, giftType: "A definir",
+    suggestion: "Sugestão: kit de cosméticos de farmácia francesa (água micelar + óleo, ~€16-20) — City Pharma, 26 Rue du Four",
+  },
+  {
+    id: uid(), person: "Aline", budgetEUR: 20, giftType: "A definir",
+    suggestion: "Sugestão: caixa de macarons Ladurée (6 unidades, €16-17) — 21 Rue Bonaparte",
+  },
+  {
+    id: uid(), person: "Marcelo", budgetEUR: 4, giftType: "Chocolate",
+    suggestion: "Tablete de chocolate francês (~€3-4) — qualquer Monoprix",
+  },
+  {
+    id: uid(), person: "Henrique e Sabrina", budgetEUR: 5, giftType: "Chocolate",
+    suggestion: "1 tablete de chocolate francês pra dividir (~€4-6) — qualquer Monoprix",
+  },
+  {
+    id: uid(), person: "Jaio e Ilma", budgetEUR: 5, giftType: "Chocolate",
+    suggestion: "1 tablete de chocolate francês pra dividir (~€4-6) — qualquer Monoprix",
+  },
+  {
+    id: uid(), person: "Celso", budgetEUR: 4, giftType: "Chocolate",
+    suggestion: "Tablete de chocolate francês (~€3-4) — qualquer Monoprix",
+  },
+  {
+    id: uid(), person: "Colegas de trabalho (Tati)", budgetEUR: 10, giftType: "Pacote de mini chocolates",
+    suggestion: "Saquinho de caramelos/pâtes de fruits avulsos (~100g, €10) — Jacques Genin, 133 Rue de Turenne",
+  },
+  {
+    id: uid(), person: "Colegas de trabalho (Di)", budgetEUR: 10, giftType: "Pacote de mini chocolates",
+    suggestion: "Saquinho de caramelos/pâtes de fruits avulsos (~100g, €10) — Jacques Genin, 133 Rue de Turenne",
+  },
+  {
+    id: uid(), person: "Yumi", budgetEUR: 4, giftType: "Chocolate",
+    suggestion: "Tablete de chocolate francês (~€3-4) — qualquer Monoprix",
+  },
+  {
+    id: uid(), person: "Miyuki", budgetEUR: 10, giftType: "Chá",
+    suggestion: "Mariage Frères ou Nina's, lata pequena (~€10-13) — ver opções acima",
+  },
+  {
+    id: uid(), person: "Kaori", budgetEUR: 4, giftType: "Chocolate",
+    suggestion: "Tablete de chocolate francês (~€3-4) — qualquer Monoprix",
+  },
+  {
+    id: uid(), person: "Paulinha", budgetEUR: 10, giftType: "A definir",
+    suggestion: "Sugestão: café Terres de Café, pacote pequeno (~€9-12) — Batignolles",
+  },
+];
+
+const BAG_LUXURY_PYRAMID = [
+  {
+    tier: "Acessível (onde vocês estão comprando)", color: "#5B6B4E",
+    brands: [
+      { name: "Longchamp", model: "Le Pliage (nylon)", price: "€ 100-150" },
+      { name: "Sézane", model: "Bolsas de couro (Le Baguette, Le Vernon)", price: "€ 150-250" },
+    ],
+  },
+  {
+    tier: "Luxo acessível / contemporâneo", color: "#A88856",
+    brands: [
+      { name: "Polène", model: "Numéro Un / Cyme", price: "€ 330-480" },
+      { name: "Le Tanneur", model: "Linha de couro clássica", price: "€ 200-350" },
+      { name: "A.P.C.", model: "Bolsas de couro minimalistas", price: "€ 350-550" },
+      { name: "Jacquemus", model: "Le Chiquito / Le Bambino", price: "€ 450-750" },
+      { name: "Maje / Sandro / Claudie Pierlot", model: "Bolsas de couro do dia a dia", price: "€ 250-400" },
+      { name: "Zadig & Voltaire", model: "Bolsas com tachas/estilo rock", price: "€ 300-450" },
+      { name: "Ba&sh", model: "Bolsas de couro casual-chique", price: "€ 250-400" },
+    ],
+  },
+  {
+    tier: "Luxo tradicional (grife alta)", color: "#C97B4A",
+    brands: [
+      { name: "Louis Vuitton", model: "Neverfull (canvas monograma)", price: "€ 1.300-1.500" },
+      { name: "Dior", model: "Lady Dior (tamanho pequeno)", price: "€ 5.500+" },
+      { name: "Céline", model: "Triomphe (canvas/couro)", price: "€ 1.200-2.500" },
+      { name: "Chloé", model: "Marcie", price: "€ 1.500-2.500" },
+      { name: "Givenchy", model: "Antigona (pequena)", price: "€ 1.500-2.800" },
+      { name: "Saint Laurent", model: "Loulou / Envelope pequeno", price: "€ 2.000-2.800" },
+      { name: "Balenciaga", model: "Hourglass / City pequena", price: "€ 2.000-2.800" },
+      { name: "Lanvin", model: "Bolsas de couro clássicas", price: "€ 1.200-2.000" },
+    ],
+  },
+  {
+    tier: "Luxo máximo (griffe de elite)", color: "#9B2C2C",
+    brands: [
+      { name: "Chanel", model: "Classic Flap (tamanho pequeno)", price: "€ 8.000-10.000+" },
+      { name: "Hermès", model: "Birkin", price: "€ 10.000+ (com lista de espera, não é só chegar e comprar)" },
+      { name: "Goyard", model: "Saint Louis PM (tote)", price: "€ 2.000-2.500 (marca não faz promoção nunca, e costuma preferir pagamento à vista)" },
+    ],
+  },
+];
+
+const FRENCH_BRANDS = [
+  {
+    id: uid(), category: "Roupas", name: "Sézane", store: "L'Appartement Paris 4 (Marais)",
+    address: "Bains du Marais, região da Rue des Blancs-Manteaux, 75004 Paris",
+    avgPrice: "€80-150 (saia/vestido) · €150-220 (suéter de caxemira)",
+    notes: "Marca francesa de 'luxo acessível' que virou fenômeno online — ninguém acha que é turística de tão usada pelas parisienses. Peças-chave: suéteres de caxemira, vestidos, sapatilhas e o cardigã Gilet (best-seller). Aberta aos domingos, então cai bem no mesmo dia do Marais.",
+  },
+  {
+    id: uid(), category: "Cosméticos", name: "Marcas de farmácia francesa (Bioderma, Nuxe, La Roche-Posay, Avène, Caudalie)", store: "City Pharma",
+    address: "26 Rue du Four, 75006 Paris", metro: "Mabillon (M10) ou Saint-Germain-des-Prés (M4)",
+    avgPrice: "€8-15 por item (água micelar, óleo, protetor solar)",
+    notes: "A farmácia mais famosa de Paris pra cosmético barato — até 30% mais barato que outras farmácias. Pedidas certeiras: água micelar Bioderma Sensibio H2O, óleo Nuxe Huile Prodigieuse, protetor solar La Roche-Posay. Vá cedo (abre 8h30) pra fugir da multidão. Fica em Saint-Germain, mesma região do GoodJo/Kilo Shop/Luxemburgo.",
+  },
+  {
+    id: uid(), category: "Outros (casa/perfume)", name: "Diptyque", store: "Boutique Diptyque Saint-Germain",
+    address: "34 Boulevard Saint-Germain, 75005 Paris", metro: "Maubert-Mutualité (M10)",
+    avgPrice: "€52 (vela clássica 190g)",
+    notes: "Velas e perfumes de nicho, criados em Paris desde 1961 — a vela Baies (groselha/rosa) é o item mais icônico e um clássico de presente. Preço não é baixo, mas o cheiro é bem 'Paris' mesmo.",
+  },
+  {
+    id: uid(), category: "Outros (concept store)", name: "Merci", store: "Merci Paris",
+    address: "111 Boulevard Beaumarchais, 75003 Paris", metro: "Saint-Sébastien – Froissart (M8)",
+    avgPrice: "€15-20 (a sacola tote icônica) · variável no resto (moda, casa, design)",
+    notes: "Concept store icônico do Haut-Marais — moda, design e itens de casa curados, com um Fiat 500 vintage estacionado na entrada (point de foto). Fechado aos domingos, então não cai no dia do Marais — mas fica bem perto da região do Café Pli/Canal Saint-Martin, dá pra encaixar nesse dia.",
+  },
+];
+
+/* ---------- Gifts ---------- */
+
+function GiftsTab({ gifts }) {
+  const totalBudget = gifts.reduce((s, g) => s + (g.budgetEUR || 0), 0);
+  const pendingCount = gifts.filter((g) => g.giftType === "A definir").length;
 
   return (
     <div className="space-y-4">
       <SectionCard>
-        <p className="text-[11px] tracking-[0.08em] uppercase text-[#6B655A] mb-1">Total da wishlist</p>
-        <p className="font-display text-[26px] text-[#3B5166]">
-          {Object.entries(totalsByCurrency).map(([cur, val]) => `${cur} ${fmtMoney(val)}`).join(" · ") || "—"}
+        <p className="text-[11px] tracking-[0.08em] uppercase text-[#6B655A] mb-1">Total do orçamento de presentes</p>
+        <p className="font-display text-[26px] text-[#3B5166]">€ {fmtMoney(totalBudget)}</p>
+        <p className="text-[11px] text-[#8A8375] mt-1">
+          {gifts.length} pessoas/grupos{pendingCount > 0 ? ` · ${pendingCount} ainda "a definir" (já com sugestão)` : ""}
         </p>
-        <p className="text-[11px] text-[#8A8375] mt-1">Já entra na estimativa de compras do orçamento e no crédito em euros.</p>
       </SectionCard>
 
-      {wishlist.length === 0 && <EmptyHint text="Nada na wishlist ainda. Me manda o link do produto que você quer comprar." />}
+      {gifts.length === 0 && <EmptyHint text="Nenhum presente na lista ainda." />}
 
       <div className="space-y-2.5">
-        {wishlist.map((w) => (
-          <div key={w.id} className="bg-white/60 border border-[#D9D2C2] rounded-sm px-3 py-2.5">
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex items-start gap-2.5 min-w-0">
-                <div
-                  className="w-12 h-12 rounded-sm shrink-0 flex items-center justify-center"
-                  style={{ background: `${w.color || "#A88856"}22` }}
-                >
-                  {w.icon === "cutlery" ? (
-                    <Utensils size={20} style={{ color: w.color || "#A88856" }} />
-                  ) : (
-                    <ShoppingBag size={20} style={{ color: w.color || "#A88856" }} />
-                  )}
-                </div>
-                <div className="min-w-0">
-                  <p className="text-[13px] font-medium">{w.item}</p>
-                  <p className="text-[11px] text-[#8A8375] mt-0.5">{w.store}{w.storeAddress ? ` · ${w.storeAddress}` : ""}</p>
-                </div>
-              </div>
-              <span className="font-mono text-[13px] shrink-0 text-right">
-                {w.currency} {fmtMoney(toNumber(w.price))}
-                {w.quantity > 1 ? ` × ${w.quantity}` : ""}
-              </span>
+        {gifts.map((g) => (
+          <div key={g.id} className="bg-white/60 border border-[#D9D2C2] rounded-sm px-3 py-2.5">
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-[13px] font-medium">{g.person}</p>
+              <span className="font-mono text-[13px] text-[#3B5166] shrink-0">€ {fmtMoney(g.budgetEUR)}</span>
             </div>
-            {w.quantity > 1 && (
-              <p className="text-[11px] text-[#6B655A] mt-1">Total: {w.currency} {fmtMoney(toNumber(w.price) * w.quantity)}</p>
-            )}
-            <NoteList text={w.notes} />
-            {w.link && (
-              <a href={w.link} target="_blank" rel="noreferrer" className="text-[11px] text-[#3B5166] underline mt-1.5 inline-block break-all">
-                ver produto
-              </a>
-            )}
+            <span
+              className="text-[10px] px-1.5 py-0.5 rounded-full font-medium inline-block mt-1"
+              style={{
+                background: g.giftType === "A definir" ? "#9B2C2C1f" : "#5B6B4E1f",
+                color: g.giftType === "A definir" ? "#9B2C2C" : "#5B6B4E",
+              }}
+            >
+              {g.giftType}
+            </span>
+            <p className="text-[12px] text-[#4A453D] mt-1.5 leading-relaxed">{g.suggestion}</p>
           </div>
         ))}
       </div>
 
       <SectionCard>
         <p className="text-[12px] text-[#6B655A] leading-relaxed">
-          Este app é só de leitura — me manda o link do produto que você quer comprar que eu adiciono aqui.
+          Este app é só de leitura — me manda mais nomes, ajustes de orçamento ou trocas de sugestão que eu atualizo pra você.
+        </p>
+      </SectionCard>
+    </div>
+  );
+}
+
+/* ---------- Compras ---------- */
+
+function ComprasTab({ wishlist, itinerary, souvenirs }) {
+  const totalsByCurrency = wishlist.reduce((acc, w) => {
+    const total = toNumber(w.price) * (w.quantity || 1);
+    acc[w.currency] = (acc[w.currency] || 0) + total;
+    return acc;
+  }, {});
+
+  const shops = [...itinerary]
+    .filter((i) => i.type === "compras")
+    .sort((a, b) => (a.date || "9999").localeCompare(b.date || "9999") || (a.time || "").localeCompare(b.time || ""));
+
+  return (
+    <div className="space-y-4">
+      <SectionCard>
+        <p className="text-[13px] text-[#4A453D] leading-relaxed">
+          Todas as lojas do roteiro num só lugar, mais os itens de compra já decididos com preço e link.
+        </p>
+      </SectionCard>
+
+      <div>
+        <p className="text-[11px] tracking-[0.08em] uppercase text-[#9B2C2C] mb-0.5">Compras imperdíveis</p>
+        <p className="text-[11px] text-[#8A8375] mb-2">
+          {Object.entries(totalsByCurrency).map(([cur, val]) => `${cur} ${fmtMoney(val)}`).join(" · ") || "—"} já sinalizado
+        </p>
+
+        {wishlist.length === 0 && <EmptyHint text="Nada sinalizado ainda. Me manda o link do produto que você quer comprar." />}
+
+        <div className="space-y-2.5">
+          {wishlist.map((w) => (
+            <div key={w.id} className="bg-white/60 border border-[#9B2C2C]/30 rounded-sm px-3 py-2.5">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start gap-2.5 min-w-0">
+                  <div
+                    className="w-12 h-12 rounded-sm shrink-0 flex items-center justify-center"
+                    style={{ background: `${w.color || "#A88856"}22` }}
+                  >
+                    {w.icon === "cutlery" ? (
+                      <Utensils size={20} style={{ color: w.color || "#A88856" }} />
+                    ) : (
+                      <ShoppingBag size={20} style={{ color: w.color || "#A88856" }} />
+                    )}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-[13px] font-medium">{w.item}</p>
+                    <p className="text-[11px] text-[#8A8375] mt-0.5">{w.store}{w.storeAddress ? ` · ${w.storeAddress}` : ""}</p>
+                  </div>
+                </div>
+                <span className="font-mono text-[13px] shrink-0 text-right">
+                  {w.currency} {fmtMoney(toNumber(w.price))}
+                  {w.quantity > 1 ? ` × ${w.quantity}` : ""}
+                </span>
+              </div>
+              {w.quantity > 1 && (
+                <p className="text-[11px] text-[#6B655A] mt-1">Total: {w.currency} {fmtMoney(toNumber(w.price) * w.quantity)}</p>
+              )}
+              <NoteList text={w.notes} />
+              {w.link && (
+                <a href={w.link} target="_blank" rel="noreferrer" className="text-[11px] text-[#3B5166] underline mt-1.5 inline-block break-all">
+                  ver produto
+                </a>
+              )}
+              {w.alternatives && w.alternatives.length > 0 && (
+                <div className="mt-2.5 pt-2.5 border-t border-[#D9D2C2]">
+                  <p className="text-[10px] tracking-[0.08em] uppercase text-[#A88856] mb-1.5">Alternativas</p>
+                  <div className="space-y-2">
+                    {w.alternatives.map((alt, i) => (
+                      <div key={i}>
+                        <p className="text-[12px] font-medium">{alt.name}</p>
+                        <p className="text-[11px] text-[#8A8375] mt-0.5">{alt.address}</p>
+                        <p className="text-[11px] text-[#6B655A] mt-0.5 leading-relaxed">{alt.notes}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <p className="text-[11px] tracking-[0.08em] uppercase text-[#6B655A] mb-2 mt-2">Lojas do roteiro</p>
+        {shops.length === 0 && <EmptyHint text="Nenhuma loja no roteiro ainda." />}
+        <div className="space-y-2.5">
+          {shops.map((s) => (
+            <div key={s.id} className="bg-white/60 border border-[#D9D2C2] rounded-sm px-3 py-2.5">
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-[13px] font-medium">{s.title}</p>
+                {s.date && <span className="text-[11px] font-mono text-[#9B2C2C] shrink-0">{tripDayLabel(s.date)}</span>}
+              </div>
+              {s.address && (
+                <p className="text-[11px] text-[#8A8375] mt-0.5 flex items-center gap-1">
+                  <MapPin size={11} className="shrink-0" /> {s.address}
+                </p>
+              )}
+              {s.metro && <p className="text-[11px] text-[#3B5166] mt-0.5">🚇 {s.metro}</p>}
+              <NoteList text={s.notes} />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <p className="text-[11px] tracking-[0.08em] uppercase text-[#6B655A] mb-2 mt-2">Alimentos pra levar pra casa</p>
+        <p className="text-[11px] text-[#8A8375] mb-2">Chá, chocolate, café e outros industrializados/lacrados — passam tranquilo na alfândega (ver aba Logística).</p>
+        <div className="space-y-2.5">
+          {souvenirs.map((s) => (
+            <div key={s.id} className="bg-white/60 border border-[#D9D2C2] rounded-sm px-3 py-2.5">
+              <p className="text-[10px] tracking-[0.08em] uppercase text-[#A88856] mb-0.5">{SOUVENIR_CATEGORIES.find((c) => c.id === s.category)?.label}</p>
+              {s.avgPrice && <p className="text-[11px] font-mono text-[#3B5166] mb-0.5">{s.avgPrice}</p>}
+              <p className="text-[13px] font-medium">{s.item}</p>
+              <p className="text-[11px] text-[#8A8375] mt-0.5">{s.store}</p>
+              <p className="text-[11px] text-[#8A8375] mt-1 flex items-center gap-1">
+                <MapPin size={11} className="shrink-0" /> {s.address}
+              </p>
+              {s.metro && <p className="text-[11px] text-[#3B5166] mt-0.5">🚇 {s.metro}</p>}
+              <NoteList text={s.notes} />
+              {s.link && (
+                <a href={s.link} target="_blank" rel="noreferrer" className="text-[11px] text-[#3B5166] underline mt-1.5 inline-block">
+                  {s.linkLabel || "ver site"} ↗
+                </a>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <p className="text-[11px] tracking-[0.08em] uppercase text-[#6B655A] mb-0.5">Pirâmide do luxo — bolsas francesas</p>
+        <p className="text-[11px] text-[#8A8375] mb-2">Preço médio de uma bolsa simples em cada marca, do mais acessível ao mais alto — pra situar onde Sézane, Polène e Longchamp ficam.</p>
+        <div className="space-y-2.5">
+          {BAG_LUXURY_PYRAMID.map((t) => (
+            <div key={t.tier} className="border-l-2 pl-3" style={{ borderColor: t.color }}>
+              <p className="text-[12px] font-medium" style={{ color: t.color }}>{t.tier}</p>
+              <div className="mt-1 space-y-2">
+                {t.brands.map((b) => (
+                  <div key={b.name} className="text-[12px]">
+                    <p className="text-[#4A453D]">
+                      <span className="font-medium">{b.name}</span> <span className="text-[#8A8375]">— {b.model}</span>
+                    </p>
+                    <p className="font-mono text-[#6B655A]">{b.price}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <SectionCard>
+        <p className="font-display text-[18px] mb-1">Risco de falsificação nos brechós</p>
+        <div className="space-y-3 text-[12px] text-[#4A453D] leading-relaxed">
+          <div>
+            <p className="font-medium text-[13px] text-[#1C1C1E]">A lei francesa é séria</p>
+            <p>Comprar ou transportar produto falsificado na França é crime — até 3 anos de prisão e € 300.000 de multa (chega a 5 anos/€ 500.000 em caso de revenda). Vale tanto pra bolsa quanto pra qualquer item com marca.</p>
+          </div>
+          <div>
+            <p className="font-medium text-[13px] text-[#1C1C1E]">Free'p'Star, Kilo Shop e Alatone — risco baixo</p>
+            <p>São brechós de moda em geral (roupa vintage, peças por peso), não especializados em bolsas de grife — dificilmente vão ter réplica de luxo em circulação, porque simplesmente não é o produto que eles vendem.</p>
+          </div>
+          <div>
+            <p className="font-medium text-[13px] text-[#1C1C1E]">GoodJo Vintage — risco moderado, exige atenção</p>
+            <p>Esse sim é brechó de luxo de verdade (Hermès, Chanel, YSL, Dior) — é onde vale prestar atenção. Brechós de luxo sérios fazem autenticação profissional e dão documentação/nota fiscal; se a loja não souber comprovar procedência ou fugir da pergunta, não vale o risco.</p>
+          </div>
+          <div>
+            <p className="font-medium text-[13px] text-[#1C1C1E]">Sinais de alerta</p>
+            <ul className="mt-1 space-y-1">
+              <li className="flex gap-1.5"><span className="text-[#A88856] shrink-0">•</span> Preço muito abaixo do valor de mercado do modelo (pesquise antes de ir).</li>
+              <li className="flex gap-1.5"><span className="text-[#A88856] shrink-0">•</span> Cheiro forte de plástico/cola, costura torta ou acabamento interno malfeito.</li>
+              <li className="flex gap-1.5"><span className="text-[#A88856] shrink-0">•</span> Loja sem nota fiscal ou que evita explicar a procedência da peça.</li>
+              <li className="flex gap-1.5"><span className="text-[#A88856] shrink-0">•</span> Vários exemplares idênticos do mesmo modelo em cores/tamanhos diferentes disponíveis na hora.</li>
+            </ul>
+          </div>
+          <div>
+            <p className="font-medium text-[13px] text-[#1C1C1E]">Onde não tem esse risco</p>
+            <p>As lojas oficiais das marcas (Longchamp, Sézane, Uniqlo, Muji) e o restante do roteiro não têm nenhum risco de falsificação — é só nos brechós de luxo (GoodJo) que vale essa atenção extra.</p>
+          </div>
+        </div>
+      </SectionCard>
+
+      <div>
+        <p className="text-[11px] tracking-[0.08em] uppercase text-[#6B655A] mb-2 mt-2">Marcas francesas imperdíveis</p>
+        <p className="text-[11px] text-[#8A8375] mb-2">Roupas, cosméticos e outros — coisas que só valem a pena comprar sendo francesas mesmo.</p>
+        <div className="space-y-2.5">
+          {FRENCH_BRANDS.map((b) => (
+            <div key={b.id} className="bg-white/60 border border-[#D9D2C2] rounded-sm px-3 py-2.5">
+              <p className="text-[10px] tracking-[0.08em] uppercase text-[#A88856] mb-0.5">{b.category}</p>
+              {b.avgPrice && <p className="text-[11px] font-mono text-[#3B5166] mb-0.5">{b.avgPrice}</p>}
+              <p className="text-[13px] font-medium">{b.name}</p>
+              <p className="text-[11px] text-[#8A8375] mt-0.5">{b.store}</p>
+              <p className="text-[11px] text-[#8A8375] mt-1 flex items-center gap-1">
+                <MapPin size={11} className="shrink-0" /> {b.address}
+              </p>
+              {b.metro && <p className="text-[11px] text-[#3B5166] mt-0.5">🚇 {b.metro}</p>}
+              <NoteList text={b.notes} />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <SectionCard>
+        <p className="text-[12px] text-[#6B655A] leading-relaxed">
+          Este app é só de leitura — me manda o link do produto ou a loja nova que eu adiciono aqui.
         </p>
       </SectionCard>
     </div>
