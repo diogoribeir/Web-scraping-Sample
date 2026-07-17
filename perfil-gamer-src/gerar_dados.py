@@ -43,18 +43,6 @@ notas_plano = [
     "FF14: assinatura pausada; retorno out/nov 2026 antes da expansão Evercold (jan/2027)",
 ]
 
-insights = [
-    ["Gameplay é o motor do veredicto", "História amplifica, não sustenta; para souls-likes história não é eixo"],
-    ["Fun Factor 4 → conclusão garantida", "Padrão histórico de 100%"],
-    ["Horas jogadas ≠ qualidade", "Valhalla 131h = Medíocre (jogo gigante + pandemia); Tsushima 65h = Masterpiece"],
-    ["Retentativa de jogo dropado: 0% de sucesso", "Nenhuma passou de Medíocre — diferente de replay de jogo zerado"],
-    ["Walkthrough ≥2 = jogo amado (ou DLC)", "Tsushima e Exp33 Masterpiece, TLoU; exceção FFXV (DLCs)"],
-    ["Fórmula Ubisoft = risco alto", "Odyssey/Origins/Outlaws Muito Ruim e drop; exceção parcial: Shadows em NG+"],
-    ["Souls-like só FromSoftware", "Elden Ring/Sekiro Masterpiece vs LotF/Demon Souls Medíocre, Khazan/Wuchang drop"],
-    ["Survival Horror: 100% conclusão", "Gênero subestimado na coleção"],
-    ["Sem fast travel fácil = drop", "Dragon's Dogma 2, FFXII, Kingdom Come II"],
-    ["Combate simples = drop mesmo com boa escrita", "AC Black Flag Resync: cutscenes boas, dropado em 13h"],
-]
 
 hoje = datetime.date.today().strftime('%d/%m/%Y')
 out = (
@@ -63,7 +51,6 @@ out = (
     f"window.JOGOS = {json.dumps(games, ensure_ascii=False, indent=1)};\n"
     f"window.PLANO = {json.dumps(plano, ensure_ascii=False, indent=1)};\n"
     f"window.NOTAS_PLANO = {json.dumps(notas_plano, ensure_ascii=False, indent=1)};\n"
-    f"window.INSIGHTS = {json.dumps(insights, ensure_ascii=False, indent=1)};\n"
 )
 open('../perfil-gamer/dados.js', 'w', encoding='utf-8').write(out)
 print('dados.js gerado:', len(games), 'jogos')
