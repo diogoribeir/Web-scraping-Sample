@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#12151C" />
+<title>Perfil Gamer — Biblioteca de Jogos</title>
+<style>
+:root{
+  --bg:#F2F3F6; --surface:#FFFFFF; --surface2:#E9EBF0; --ink:#171B24; --muted:#5D6572; --line:#DCDFE6;
+  --accent:#2F6FED; --accent-soft:#E3ECFD;
+  --mp:#B98A2E; --mb:#2E8B57; --bo:#2F6FED; --me:#C7A227; --ru:#D07B2F; --mr:#CE4444;
+  --shadow:0 5px 18px rgba(23,27,36,.08);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0F1218; --surface:#171C26; --surface2:#1F2530; --ink:#E8EBF2; --muted:#96A0B0; --line:#2A3140;
+    --accent:#6E9BFF; --accent-soft:#1D2A45;
+    --mp:#E7B54E; --mb:#5BC98B; --bo:#6E9BFF; --me:#E0C654; --ru:#E89A56; --mr:#E86A6A;
+    --shadow:0 5px 18px rgba(0,0,0,.35);
+  }
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg);color:var(--ink);min-height:100vh;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;
+  padding:env(safe-area-inset-top) 0 0;
+}
+.num{font-variant-numeric:tabular-nums}
+.wrap{max-width:640px;margin:0 auto;padding:0 14px calc(96px + env(safe-area-inset-bottom))}
+header.top{padding:16px 2px 10px}
+header.top h1{margin:0;font-size:1.3rem;font-weight:800;letter-spacing:.01em}
+header.top h1 span{color:var(--accent)}
+header.top .sub{color:var(--muted);font-size:.78rem;margin-top:2px}
+/* tiles de resumo */
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:6px 0 12px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 8px;text-align:center;box-shadow:var(--shadow)}
+.tile .v{font-size:1.05rem;font-weight:800}
+.tile .k{font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+/* busca e filtros */
+.search{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:13px;background:var(--surface);color:var(--ink);font:inherit;font-size:.95rem}
+.search:focus-visible{outline:2px solid var(--accent);border-color:var(--accent)}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:10px 0 4px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.chips::-webkit-scrollbar{display:none}
+.fchip{flex:0 0 auto;border:1px solid var(--line);background:var(--surface);color:var(--muted);
+  font:inherit;font-size:.76rem;font-weight:700;padding:7px 12px;border-radius:999px;cursor:pointer}
+.fchip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.sortrow{display:flex;align-items:center;gap:8px;margin:4px 0 10px}
+.sortrow label{font-size:.72rem;color:var(--muted);font-weight:700}
+.sortrow select{flex:1;padding:9px 10px;border:1.5px solid var(--line);border-radius:11px;background:var(--surface);color:var(--ink);font:inherit;font-size:.85rem}
+.count{font-size:.72rem;color:var(--muted);margin:2px 2px 8px}
+/* card de jogo */
+details.game{background:var(--surface);border:1px solid var(--line);border-radius:15px;box-shadow:var(--shadow);margin-bottom:9px;overflow:hidden}
+details.game summary{cursor:pointer;list-style:none;padding:12px 14px}
+details.game summary::-webkit-details-marker{display:none}
+.grow{display:flex;align-items:center;gap:10px}
+.gname{flex:1;min-width:0;font-weight:700;font-size:.92rem;line-height:1.3}
+.vpill{flex:0 0 auto;font-size:.64rem;font-weight:800;letter-spacing:.03em;padding:4px 9px;border-radius:999px;color:#fff;white-space:nowrap}
+.gmeta{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+.mchip{font-size:.66rem;font-weight:700;padding:2px 8px;border-radius:7px;background:var(--surface2);color:var(--muted);white-space:nowrap}
+.mchip.hrs{color:var(--ink)}
+.gbody{padding:0 14px 12px;border-top:1px dashed var(--line)}
+.gbody .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.stat{background:var(--surface2);border-radius:10px;padding:7px 10px;font-size:.72rem;color:var(--muted)}
+.stat b{color:var(--ink);font-size:.82rem;display:block}
+.gnote{font-size:.78rem;color:var(--muted);margin-top:10px;line-height:1.5}
+.gnote b{color:var(--ink)}
+.internal{font-size:.62rem;color:var(--muted);opacity:.75;margin-top:8px;letter-spacing:.02em}
+/* stats view */
+h2{font-size:1.02rem;margin:20px 2px 10px;font-weight:800}
+.bar{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.bar .lbl{flex:0 0 108px;font-size:.72rem;font-weight:700;text-align:right;color:var(--muted)}
+.bar .track{flex:1;height:20px;background:var(--surface2);border-radius:7px;overflow:hidden}
+.bar .fill{height:100%;border-radius:7px;min-width:2px}
+.bar .val{flex:0 0 62px;font-size:.72rem;color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:15px;box-shadow:var(--shadow);padding:12px 14px;margin-bottom:10px}
+.rowline{display:flex;align-items:baseline;gap:8px;padding:7px 0;border-bottom:1px solid var(--line);font-size:.82rem}
+.rowline:last-child{border-bottom:0}
+.rowline .pos{flex:0 0 20px;color:var(--muted);font-size:.72rem;font-weight:800}
+.rowline .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rowline .hv{flex:0 0 auto;font-weight:800}
+.glinha{padding:9px 0;border-bottom:1px solid var(--line)}
+.glinha:last-child{border-bottom:0}
+.glinha .t{display:flex;justify-content:space-between;gap:8px;font-size:.84rem;font-weight:700}
+.glinha .s{font-size:.7rem;color:var(--muted);margin-top:2px}
+.ins{padding:9px 0;border-bottom:1px solid var(--line);font-size:.8rem}
+.ins:last-child{border-bottom:0}
+.ins b{display:block;font-size:.82rem}
+.ins span{color:var(--muted);font-size:.75rem;line-height:1.45}
+.lead{color:var(--muted);font-size:.78rem;margin:0 2px 10px;line-height:1.5}
+/* nav inferior */
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:40;display:flex;gap:2px;background:var(--surface);
+  border-top:1px solid var(--line);padding:6px 8px calc(6px + env(safe-area-inset-bottom));box-shadow:0 -6px 20px rgba(0,0,0,.08)}
+.tabbar button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;border:0;background:none;
+  color:var(--muted);font:inherit;font-size:11px;font-weight:700;padding:6px 2px;border-radius:12px;cursor:pointer}
+.tabbar button .ic{font-size:17px;line-height:1}
+.tabbar button.on{color:var(--accent);background:var(--accent-soft)}
+@media (min-width:700px){.tabbar{left:50%;right:auto;transform:translateX(-50%);width:440px;border:1px solid var(--line);border-radius:16px;bottom:12px}}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>🎮 Perfil <span>Gamer</span></h1>
+    <div class="sub" id="subline">Biblioteca PS4 + PS5 · veredictos estilo ACG</div>
+  </header>
+  <main id="content"></main>
+</div>
+<nav class="tabbar" id="tabbar" aria-label="Abas"></nav>
+<script src="dados.js"></script>
+<script>
+"use strict";
+const ORD = ["Muito Ruim","Ruim","Medíocre","Bom","Muito Bom","Masterpiece"];
+const VCOLOR = {"Masterpiece":"var(--mp)","Muito Bom":"var(--mb)","Bom":"var(--bo)","Medíocre":"var(--me)","Ruim":"var(--ru)","Muito Ruim":"var(--mr)"};
+const VEMO = {"Masterpiece":"🏆","Muito Bom":"🟢","Bom":"🔵","Medíocre":"🟡","Ruim":"🟠","Muito Ruim":"🔴"};
+const CUSTO = 90; // R$ por jogo (líquido, via grupo + revenda)
+const $ = s => document.querySelector(s);
+const esc = s => String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const J = window.JOGOS || [];
+
+const TABS = [["jogos","Jogos","🎮"],["stats","Estatísticas","📊"],["plano","Plano 2026","🗓"]];
+let tab = "jogos";
+let filtro = "todos";     // todos | veredicto | S | N | #
+let busca = "";
+let ordem = "horas";
+
+function statusEmo(e){ return e==="S"?"✅":(e==="N"?"❌":"🔄"); }
+function vpill(v){ return ORD.includes(v) ? `<span class="vpill" style="background:${VCOLOR[v]}">${VEMO[v]} ${esc(v)}</span>` : `<span class="vpill" style="background:var(--muted)">N/A</span>`; }
+function custoHora(g){ return g.horas>0 ? (CUSTO/g.horas) : null; }
+function fmtCH(c){ return c==null?"—":("R$ "+(c<1?c.toFixed(2):c.toFixed(2)).replace(".",",")+"/h"); }
+
+/* ---------- aba Jogos ---------- */
+function gameCard(g){
+  const ch = custoHora(g);
+  const comp = [g.h!=null&&g.h!=="N/A"?`H ${g.h}`:null, g.g!=null&&g.g!=="N/A"?`G ${g.g}`:null,
+                g.d!=null?`D ${g.d}`:null, g.ff!=null?`FF ${g.ff}`:null].filter(Boolean).join(" · ");
+  return `<details class="game">
+    <summary>
+      <div class="grow"><div class="gname">${esc(g.nome)}</div>${vpill(g.v)}</div>
+      <div class="gmeta">
+        <span class="mchip hrs num">⏱ ${g.horas}h</span>
+        <span class="mchip">${statusEmo(g.enc)} ${g.enc==="S"?"zerado":(g.enc==="N"?"dropado":"jogando")}</span>
+        <span class="mchip">${esc((g.genres||"").split(",")[0].trim())}</span>
+        ${g.w>=2?`<span class="mchip">♥ ${g.w}× walkthrough</span>`:""}
+      </div>
+    </summary>
+    <div class="gbody">
+      <div class="row">
+        <span class="stat"><b class="num">${fmtCH(ch)}</b>custo/hora (R$90)</span>
+        <span class="stat"><b class="num">${g.horas}h</b>tempo total</span>
+        <span class="stat"><b>${esc(g.genres)}</b>gêneros</span>
+      </div>
+      ${g.motivo?`<div class="gnote"><b>Motivo do drop:</b> ${esc(g.motivo)}</div>`:""}
+      ${g.obs?`<div class="gnote"><b>Obs:</b> ${esc(g.obs)}</div>`:""}
+      ${comp?`<div class="internal">análise interna · ${esc(comp)} (História/Gameplay/Dificuldade/Fun)</div>`:""}
+    </div>
+  </details>`;
+}
+function viewJogos(){
+  let lst = J.slice();
+  if (busca) { const b = busca.toLowerCase(); lst = lst.filter(g=>g.nome.toLowerCase().includes(b)||(g.genres||"").toLowerCase().includes(b)); }
+  if (filtro!=="todos"){
+    if (["S","N","#"].includes(filtro)) lst = lst.filter(g=>g.enc===filtro);
+    else lst = lst.filter(g=>g.v===filtro);
+  }
+  const ords = {
+    horas:(a,b)=>b.horas-a.horas,
+    veredicto:(a,b)=>(ORD.indexOf(b.v)-ORD.indexOf(a.v))||(b.horas-a.horas),
+    nome:(a,b)=>a.nome.localeCompare(b.nome,"pt"),
+    custo:(a,b)=>{const ca=custoHora(a)??1e9, cb=custoHora(b)??1e9; return ca-cb;}
+  };
+  lst.sort(ords[ordem]||ords.horas);
+  const tot=J.length, hrs=J.reduce((s,g)=>s+g.horas,0);
+  const comp=J.filter(g=>g.enc==="S").length, drop=J.filter(g=>g.enc==="N").length;
+  const chips = [["todos","Todos"],["S","✅ Zerados"],["N","❌ Dropados"],["#","🔄 Jogando"],
+    ...ORD.slice().reverse().map(v=>[v, VEMO[v]+" "+v])];
+  return `
+  <div class="tiles">
+    <div class="tile"><div class="v num">${tot}</div><div class="k">jogos</div></div>
+    <div class="tile"><div class="v num">${Math.round(hrs).toLocaleString("pt-BR")}h</div><div class="k">horas</div></div>
+    <div class="tile"><div class="v num">${Math.round(comp/tot*100)}%</div><div class="k">zerados</div></div>
+    <div class="tile"><div class="v num">${Math.round(drop/tot*100)}%</div><div class="k">drop</div></div>
+  </div>
+  <input class="search" id="busca" type="search" placeholder="Buscar jogo ou gênero…" value="${esc(busca)}" />
+  <div class="chips">${chips.map(([id,l])=>`<button class="fchip ${filtro===id?'on':''}" data-filtro="${esc(id)}">${l}</button>`).join("")}</div>
+  <div class="sortrow"><label for="ordem">Ordenar:</label>
+    <select id="ordem">
+      <option value="horas" ${ordem==="horas"?"selected":""}>Mais horas</option>
+      <option value="veredicto" ${ordem==="veredicto"?"selected":""}>Melhor veredicto</option>
+      <option value="custo" ${ordem==="custo"?"selected":""}>Melhor custo/hora</option>
+      <option value="nome" ${ordem==="nome"?"selected":""}>Nome (A–Z)</option>
+    </select></div>
+  <div class="count">${lst.length} jogo(s)</div>
+  ${lst.map(gameCard).join("") || '<p class="lead">Nenhum jogo com esse filtro.</p>'}`;
+}
+
+/* ---------- aba Estatísticas ---------- */
+function viewStats(){
+  const rated = J.filter(g=>ORD.includes(g.v));
+  const dist = {}; ORD.forEach(v=>dist[v]=0); rated.forEach(g=>dist[g.v]++);
+  const maxD = Math.max(...Object.values(dist),1);
+  const bars = ORD.slice().reverse().map(v=>`
+    <div class="bar"><div class="lbl">${VEMO[v]} ${v}</div>
+      <div class="track"><div class="fill" style="width:${dist[v]/maxD*100}%;background:${VCOLOR[v]}"></div></div>
+      <div class="val num">${dist[v]} · ${Math.round(dist[v]/rated.length*100)}%</div></div>`).join("");
+  const top = J.slice().sort((a,b)=>b.horas-a.horas).slice(0,10).map((g,i)=>
+    `<div class="rowline"><span class="pos">${i+1}</span><span class="nm">${esc(g.nome)}</span>
+     <span class="hv num">${g.horas}h</span> ${vpill(g.v)}</div>`).join("");
+  // por gênero principal
+  const gen = {};
+  J.forEach(g=>{ const k=(g.genres||"?").split(",")[0].trim(); (gen[k]=gen[k]||[]).push(g); });
+  const genRows = Object.entries(gen).sort((a,b)=>b[1].length-a[1].length).map(([k,v])=>{
+    const c=v.filter(x=>x.enc==="S").length, d=v.filter(x=>x.enc==="N").length, fin=Math.max(c+d,1);
+    const hrs=v.reduce((s,x)=>s+x.horas,0);
+    return `<div class="glinha"><div class="t"><span>${esc(k)}</span><span class="num">${v.length} jogos</span></div>
+      <div class="s num">${Math.round(hrs).toLocaleString("pt-BR")}h · conclusão ${Math.round(c/fin*100)}% · drop ${Math.round(d/fin*100)}%</div></div>`;
+  }).join("");
+  const insights = (window.INSIGHTS||[]).map(([t,d])=>`<div class="ins"><b>${esc(t)}</b><span>${esc(d)}</span></div>`).join("");
+  const drops = J.filter(g=>g.enc==="N").sort((a,b)=>b.horas-a.horas).map(g=>
+    `<details class="game"><summary><div class="grow"><div class="gname">${esc(g.nome)}</div>${vpill(g.v)}</div>
+     <div class="gmeta"><span class="mchip hrs num">⏱ ${g.horas}h</span></div></summary>
+     <div class="gbody"><div class="gnote">${esc(g.motivo||"—")}</div></div></details>`).join("");
+  return `
+    <h2>⭐ Distribuição de veredictos</h2><div class="card">${bars}</div>
+    <h2>⏱ Top 10 — mais horas</h2><div class="card">${top}</div>
+    <h2>🎯 Por gênero principal</h2><div class="card">${genRows}</div>
+    <h2>💡 Insights do jogador</h2><div class="card">${insights}</div>
+    <h2>❌ Drops — toque para ver o motivo</h2>${drops}`;
+}
+
+/* ---------- aba Plano ---------- */
+function viewPlano(){
+  const rows = (window.PLANO||[]).map(p=>`
+    <div class="glinha"><div class="t"><span>${esc(p.jogo)}</span><span class="num">${esc(p.est)}</span></div>
+      <div class="s">lança ${esc(p.lanc)} · ${esc(p.status)}</div></div>`).join("");
+  const notas = (window.NOTAS_PLANO||[]).map(n=>`<div class="ins"><span>${esc(n)}</span></div>`).join("");
+  return `<p class="lead">Fila de 2026 com estimativas de horas — pensada pra disponibilidade real de jogo.</p>
+    <h2>🗓 Fila de jogos</h2><div class="card">${rows}</div>
+    <h2>📝 Notas</h2><div class="card">${notas}</div>`;
+}
+
+/* ---------- render ---------- */
+const VIEWS = {jogos:viewJogos, stats:viewStats, plano:viewPlano};
+function render(){
+  $("#tabbar").innerHTML = TABS.map(([id,l,ic])=>
+    `<button type="button" data-tab="${id}" class="${id===tab?'on':''}"><span class="ic">${ic}</span><span>${l}</span></button>`).join("");
+  $("#content").innerHTML = VIEWS[tab]();
+  $("#subline").textContent = `Biblioteca PS4 + PS5 · veredictos estilo ACG · dados de ${window.DADOS_ATUALIZADOS||""}`;
+  const b = $("#busca"); if (b){ b.addEventListener("input", e=>{ busca=e.target.value;
+    // re-render só a lista preservando o foco
+    const pos = b.selectionStart; render(); const nb=$("#busca"); nb.focus(); nb.setSelectionRange(pos,pos);
+  }); }
+  const o = $("#ordem"); if (o) o.addEventListener("change", e=>{ ordem=e.target.value; render(); });
+}
+document.addEventListener("click", e=>{
+  const t = e.target.closest("[data-tab]"); if (t){ tab=t.dataset.tab; render(); window.scrollTo({top:0}); return; }
+  const f = e.target.closest("[data-filtro]"); if (f){ filtro=f.dataset.filtro; render(); return; }
+});
+render();
+</script>
+</body>
+</html>

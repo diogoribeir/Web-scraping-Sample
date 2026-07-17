@@ -7,6 +7,7 @@ Apps do casal, publicados juntos no GitHub Pages: **https://diogoribeir.github.i
 | 🩺 Dias sem Doença | `/dias-sem-doenca/` | `dias-sem-doenca/` |
 | 📊 Roteiro Paris | `/roteiro-paris/` | `roteiro-paris/` |
 | ✈️ Paris Trip Planner | `/paris-planner/` | `paris-planner/` (build) + `paris-planner-src/` (fonte) |
+| 🎮 Perfil Gamer | `/perfil-gamer/` | `perfil-gamer/` (app) + `perfil-gamer-src/` (dados) |
 
 - Contexto completo para o Claude: **`CLAUDE.md`**
 - Receita para criar um app novo: **`docs/NOVO-APP.md`**

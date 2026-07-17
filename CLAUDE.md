@@ -1,6 +1,6 @@
 # Guia dos Apps — Di & Tati (leia isto primeiro)
 
-Este repositório hospeda **3 apps** do casal Di (Diogo) & Tati, publicados juntos no GitHub Pages.
+Este repositório hospeda **4 apps** do casal Di (Diogo) & Tati, publicados juntos no GitHub Pages.
 Este arquivo é o contexto completo para qualquer sessão nova do Claude: estrutura, Firebase,
 como atualizar cada app e como publicar. **Responda sempre em português (BR).**
 
@@ -22,7 +22,8 @@ como atualizar cada app e como publicar. **Responda sempre em português (BR).**
 - O workflow `.github/workflows/deploy-pages.yml` roda **a cada push no `master`** (ou manualmente:
   aba **Actions → "Publicar apps no GitHub Pages" → Run workflow**).
 - Ele monta o site assim: raiz → `home/` (página inicial com a lista de apps) · `/dias-sem-doenca/` →
-  `dias-sem-doenca/` · `/roteiro-paris/` → `roteiro-paris/` · `/paris-planner/` → `paris-planner/`.
+  `dias-sem-doenca/` · `/roteiro-paris/` → `roteiro-paris/` · `/paris-planner/` → `paris-planner/` ·
+  `/perfil-gamer/` → `perfil-gamer/`.
 - Fluxo de trabalho do Claude: **branch → commit → push → PR → merge no `master`** (o Diogo autoriza o
   Claude a mergear via ferramentas do GitHub). Depois do merge, verificar que o run terminou `success`.
 - O site atualiza ~1 min após o deploy (o cache do celular pode segurar alguns minutos).
@@ -81,6 +82,21 @@ como atualizar cada app e como publicar. **Responda sempre em português (BR).**
 5. Testar antes (ver "Convenções" abaixo), commit, push, PR, merge → Pages republica.
 - ⚠️ `paris-planner-src/vite.config.js` tem `base: "/app/paris-planner/"` — se o
   repositório for renomeado um dia, **atualizar essa base** e recompilar.
+
+## App 4 — 🎮 Perfil Gamer (o do Diogo)
+- **URL:** https://diogoribeir.github.io/app/perfil-gamer/
+- **Pastas:** `perfil-gamer/` (app publicado: `index.html` + `dados.js` gerado) e
+  `perfil-gamer-src/` (dados mestres: `biblioteca_jogos.xlsx` + geradores + docs).
+- **O que faz:** biblioteca de jogos PS4/PS5 com veredictos estilo ACG (Masterpiece → Muito Ruim),
+  3 abas: 🎮 Jogos (busca, filtros por veredicto/status, ordenação, custo/hora R$90) ·
+  📊 Estatísticas (distribuição, top horas, por gênero, insights, motivos de drop) · 🗓 Plano 2026.
+- **Filosofia (respeitar):** veredicto categórico, NUNCA notas numéricas na interface;
+  componentes H/G/D/FF discretos como "análise interna". Detalhes em `perfil-gamer-src/README.md`.
+- **Sincronização:** não tem (dados versionados no repositório; app é leitura).
+- **Atualização:** editar `perfil-gamer-src/biblioteca_jogos.xlsx` → `python3 gerar_doc.py` +
+  `python3 gerar_dados.py` (regenera `perfil-gamer/dados.js`) → commit/PR/merge.
+- **Agente de apoio:** `.claude/agents/perfil-gamer.md` (psicólogo comportamental + estatístico +
+  especialista em jogos) — usar para registrar jogos, propor veredictos e análises.
 
 ---
 

@@ -16,6 +16,7 @@ on:
       - "dias-sem-doenca/**"
       - "roteiro-paris/**"
       - "paris-planner/**"
+      - "perfil-gamer/**"
       - ".github/workflows/deploy-pages.yml"
   workflow_dispatch:
 
@@ -45,11 +46,12 @@ jobs:
 
       - name: Montar o site (home na raiz + um caminho por app)
         run: |
-          mkdir -p _site/dias-sem-doenca _site/roteiro-paris _site/paris-planner
+          mkdir -p _site/dias-sem-doenca _site/roteiro-paris _site/paris-planner _site/perfil-gamer
           cp -r home/. _site/
           cp -r dias-sem-doenca/. _site/dias-sem-doenca/
           cp -r roteiro-paris/. _site/roteiro-paris/
           cp -r paris-planner/. _site/paris-planner/
+          cp -r perfil-gamer/. _site/perfil-gamer/
 
       - name: Empacotar o site
         uses: actions/upload-pages-artifact@v3
