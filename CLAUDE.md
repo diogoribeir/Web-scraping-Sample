@@ -1,6 +1,6 @@
 # Guia dos Apps — Di & Tati (leia isto primeiro)
 
-Este repositório hospeda **4 apps** do casal Di (Diogo) & Tati, publicados juntos no GitHub Pages.
+Este repositório hospeda **5 apps** do casal Di (Diogo) & Tati, publicados juntos no GitHub Pages.
 Este arquivo é o contexto completo para qualquer sessão nova do Claude: estrutura, Firebase,
 como atualizar cada app e como publicar. **Responda sempre em português (BR).**
 
@@ -16,7 +16,7 @@ como atualizar cada app e como publicar. **Responda sempre em português (BR).**
 | **GitHub (código + site)** | Repositório `diogoribeir/app`, branch principal `master` | https://github.com/diogoribeir/app |
 | **Site (GitHub Pages)** | Publicado pelo workflow do Actions | https://diogoribeir.github.io/app/ |
 | **Firebase (Google)** | Projeto **`apps-4b887`** — banco de dados dos apps (Firestore + Realtime Database) | https://console.firebase.google.com/project/apps-4b887 |
-| **Vercel** | **NÃO é usado.** Se o Diogo receber notificações da Vercel, pode deletar o projeto lá sem quebrar nada | — |
+| **Vercel** | Hospeda **SÓ o Lingo** (App 5 — projeto `lingo` na conta do Diogo). ⚠️ **NÃO deletar o projeto do Lingo.** Outros projetos Vercel ligados ao repositório antigo podem ser removidos | https://lingo-liard-kappa.vercel.app |
 
 ### Como funciona o deploy
 - O workflow `.github/workflows/deploy-pages.yml` roda **a cada push no `master`** (ou manualmente:
@@ -104,6 +104,21 @@ como atualizar cada app e como publicar. **Responda sempre em português (BR).**
   do xlsx é preciso apagar o nó `planos/perfil-gamer-dt2026/jogos` (o app então sobe o seed de novo).
 - **Agente de apoio:** `.claude/agents/perfil-gamer.md` (psicólogo comportamental + estatístico +
   especialista em jogos) — usar para registrar jogos, propor veredictos e análises.
+
+## App 5 — 🇫🇷 Lingo (curso de francês, Next.js no Vercel)
+- **URL:** https://lingo-liard-kappa.vercel.app — ⚠️ hospedado no **Vercel** (único app fora do
+  GitHub Pages, porque tem servidor: rota de API do tutor + middleware de senha).
+- **Pasta:** `lingo-src/` (fonte Next.js 15 + React 19 + Tailwind 4; cópia da branch `claude/lingo`,
+  que veio de outra sessão do Claude Code).
+- **O que faz:** curso de francês PT-BR ("gramática-ponte"), 8 capítulos/26 lições, exercícios,
+  áudio pela voz do navegador, prática de fala 🎤, revisão espaçada (SRS), phrasebook, e o módulo
+  **Tutor** (chat de dúvidas com Claude).
+- **Regra de ouro do app:** nada de francês inventado por IA — conteúdo verificado em `data/*.json`;
+  a IA só atua no Tutor, com guarda gerador→avaliador (`lib/pipeline.ts`, `lib/guardrails.ts`).
+- **Variáveis de ambiente (no Vercel):** `ANTHROPIC_API_KEY` (opcional — sem ela o Tutor roda em
+  modo demonstração/mock) · `ACCESS_PASSWORD`/`ACCESS_USER` (opcional — senha básica de acesso).
+- **Atualização:** editar `lingo-src/`, e o deploy é pelo Vercel (projeto do Diogo). O card na
+  página inicial (`home/index.html`) aponta pro link do Vercel.
 
 ---
 
