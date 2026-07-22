@@ -32,6 +32,6 @@ Arquivos-fonte do app publicado em `/perfil-gamer/` (biblioteca de jogos PS4/PS5
 > ao mudarem, editar lá e regenerar.
 
 ## Filosofia (respeitar sempre)
-Veredictos categóricos estilo ACG (Masterpiece · Muito Bom · Bom · Medíocre · Ruim · Muito Ruim).
+Veredictos categóricos estilo ACG (Masterpiece · Muito Bom · Bom · Mediano · Ruim · Muito Ruim).
 Sem notas numéricas na interface; componentes H/G/D/FF aparecem discretos como "análise interna".
 Custo líquido fixo por jogo: **R$90** → custo/hora = 90 ÷ horas.

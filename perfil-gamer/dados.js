@@ -28,7 +28,7 @@ window.JOGOS = [
   "g": 2,
   "d": 1,
   "ff": 3,
-  "v": "Medíocre",
+  "v": "Mediano",
   "obs": "2ª walkthrough: DLCs dos personagens. História/combate medianos mas divertia"
  },
  {
@@ -43,7 +43,7 @@ window.JOGOS = [
   "g": 2,
   "d": 2,
   "ff": 2,
-  "v": "Medíocre",
+  "v": "Mediano",
   "obs": "Jogado muito por ser gigante + pandemia, não por qualidade"
  },
  {
@@ -163,7 +163,7 @@ window.JOGOS = [
   "g": 2,
   "d": 2,
   "ff": 2,
-  "v": "Medíocre",
+  "v": "Mediano",
   "obs": "Inclui Complete Edition (94h PS4) + base (37h PS4) · Nota revisada 1.5→2.5 jul/2026 (161h + zerado + 2 walkthroughs)"
  },
  {
@@ -223,7 +223,7 @@ window.JOGOS = [
   "g": 2,
   "d": 2,
   "ff": 2,
-  "v": "Medíocre",
+  "v": "Mediano",
   "obs": ""
  },
  {
@@ -298,7 +298,7 @@ window.JOGOS = [
   "g": 2,
   "d": 2,
   "ff": 3,
-  "v": "Medíocre",
+  "v": "Mediano",
   "obs": ""
  },
  {
@@ -403,7 +403,7 @@ window.JOGOS = [
   "g": 2,
   "d": 3,
   "ff": 2,
-  "v": "Medíocre",
+  "v": "Mediano",
   "obs": "Jogando no nightmare no ng+ · Comprado por R$60; últimas 4 missões finalizadas jul/2026"
  },
  {
@@ -598,7 +598,7 @@ window.JOGOS = [
   "g": 2,
   "d": 3,
   "ff": 2,
-  "v": "Medíocre",
+  "v": "Mediano",
   "obs": ""
  },
  {
@@ -613,7 +613,7 @@ window.JOGOS = [
   "g": 2,
   "d": 2,
   "ff": 3,
-  "v": "Medíocre",
+  "v": "Mediano",
   "obs": ""
  },
  {
@@ -628,7 +628,7 @@ window.JOGOS = [
   "g": 2,
   "d": 3,
   "ff": 3,
-  "v": "Medíocre",
+  "v": "Mediano",
   "obs": ""
  },
  {
@@ -748,7 +748,7 @@ window.JOGOS = [
   "g": 2,
   "d": 2,
   "ff": 2,
-  "v": "Medíocre",
+  "v": "Mediano",
   "obs": ""
  },
  {
@@ -823,7 +823,7 @@ window.JOGOS = [
   "g": 2,
   "d": 2,
   "ff": 2,
-  "v": "Medíocre",
+  "v": "Mediano",
   "obs": ""
  },
  {
@@ -883,7 +883,7 @@ window.JOGOS = [
   "g": 2,
   "d": 2,
   "ff": 2,
-  "v": "Medíocre",
+  "v": "Mediano",
   "obs": ""
  },
  {
@@ -928,7 +928,7 @@ window.JOGOS = [
   "g": 2,
   "d": 3,
   "ff": 2,
-  "v": "Medíocre",
+  "v": "Mediano",
   "obs": ""
  },
  {
