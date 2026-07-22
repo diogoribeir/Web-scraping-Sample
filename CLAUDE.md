@@ -98,9 +98,14 @@ como atualizar cada app e como publicar. **Responda sempre em português (BR).**
 - **Filosofia (respeitar):** veredicto categórico, NUNCA notas numéricas na interface;
   componentes H/G/D/FF discretos como "análise interna". Detalhes em `perfil-gamer-src/README.md`.
 - **EDITÁVEL no app** (igual aos outros): botão "➕ Registrar jogo" + Editar/Excluir em cada card.
+  A aba 🗓 **Plano 2026** também é editável: adicionar/editar/excluir jogos planejados + campo "horas
+  disponíveis" que soma as estimativas e mostra se a fila cabe no tempo (sobra/falta). Na aba 📊
+  **Estatísticas**, o "Top 10 — mais horas" tem chips para filtrar por veredicto (Masterpiece, Muito Bom…).
 - **Sincronização:** Realtime Database via REST, nó **`planos/perfil-gamer-dt2026`** — a nuvem é a
   fonte da verdade; `perfil-gamer/dados.js` é só a carga inicial (seed). localStorage = cópia offline;
-  recarrega ao voltar se houver gravação mais nova (mesma receita 1 do paris-planner).
+  recarrega ao voltar se houver gravação mais nova (mesma receita 1 do paris-planner). O **Plano 2026**
+  (jogos planejados + horas disponíveis) sincroniza no mesmo nó, chave `plano2026` (`{itens,horasDisp}`);
+  `window.PLANO` do `dados.js` é só o seed inicial.
 - **Atualização em massa/histórico:** `perfil-gamer-src/biblioteca_jogos.xlsx` + `gerar_doc.py` +
   `gerar_dados.py` (regenera o seed). ⚠️ O seed NÃO sobrescreve a nuvem — para repor a nuvem a partir
   do xlsx é preciso apagar o nó `planos/perfil-gamer-dt2026/jogos` (o app então sobe o seed de novo).

@@ -9,8 +9,8 @@ wb = openpyxl.load_workbook('biblioteca_jogos.xlsx', data_only=True)
 ws = wb['Biblioteca de Jogos']
 num = json.load(open('.notas_numericas_backup.json', encoding='utf-8'))
 
-ORD = ['Muito Ruim','Ruim','Medíocre','Bom','Muito Bom','Masterpiece']
-EMO = {'Masterpiece':'🏆','Muito Bom':'🟢','Bom':'🔵','Medíocre':'🟡','Ruim':'🟠','Muito Ruim':'🔴'}
+ORD = ['Muito Ruim','Ruim','Mediano','Bom','Muito Bom','Masterpiece']
+EMO = {'Masterpiece':'🏆','Muito Bom':'🟢','Bom':'🔵','Mediano':'🟡','Ruim':'🟠','Muito Ruim':'🔴'}
 def show(v): return f'{EMO[v]} {v}' if v in EMO else 'N/A'
 
 games = []
@@ -33,15 +33,15 @@ def vmed(lst):
     ns=[g['num'] for g in lst if isinstance(g['num'],(int,float))]
     if not ns: return 'N/A'
     m=sum(ns)/len(ns)
-    for lim,v in [(4.75,'Masterpiece'),(3.75,'Muito Bom'),(2.75,'Bom'),(2.25,'Medíocre'),(1.25,'Ruim')]:
+    for lim,v in [(4.75,'Masterpiece'),(3.75,'Muito Bom'),(2.75,'Bom'),(2.25,'Mediano'),(1.25,'Ruim')]:
         if m>=lim: return show(v)
     return show('Muito Ruim')
 
 L=[]; A=L.append
 A('# 🎮 Biblioteca de Jogos — PS4 + PS5\n')
 A(f'> **Documentação {VERSAO}** · Atualizada em {HOJE}  ')
-A('> **Sistema de Veredictos (estilo ACG):** Masterpiece · Muito Bom · Bom · Medíocre · Ruim · Muito Ruim  ')
-A('> Medíocre = mediano, não ruim — não há nada de errado em ser mediano\n')
+A('> **Sistema de Veredictos (estilo ACG):** Masterpiece · Muito Bom · Bom · Mediano · Ruim · Muito Ruim  ')
+A('> Mediano = médio/normal, não ruim — não há nada de errado em ser mediano\n')
 A('---\n')
 A('## 🗂️ Esquema de Dados (base para a aplicação)\n')
 A('Arquivo fonte: `biblioteca_jogos.xlsx` · Aba `Biblioteca de Jogos` · Gerador: `gerar_doc.py`\n')
@@ -58,10 +58,10 @@ A('| História (1-4) | int ou N/A | Componente interno de análise |')
 A('| Gameplay (1-4) | int | Componente interno de análise |')
 A('| Dificuldade (1-3) | int | 1=Fácil · 2=Equilibrado · 3=Difícil |')
 A('| Fun Factor (1-4) | int | Componente interno de análise |')
-A('| Veredicto | enum 6 níveis | Masterpiece / Muito Bom / Bom / Medíocre / Ruim / Muito Ruim |')
+A('| Veredicto | enum 6 níveis | Masterpiece / Muito Bom / Bom / Mediano / Ruim / Muito Ruim |')
 A('| Observação | texto | Contexto livre |\n')
 A('**Filosofia do veredicto:** julgamento categórico, não medição. Componentes 1–4 são evidência analítica interna.  ')
-A('**Ordem ordinal (p/ app):** Muito Ruim=1 · Ruim=2 · Medíocre=3 · Bom=4 · Muito Bom=5 · Masterpiece=6  ')
+A('**Ordem ordinal (p/ app):** Muito Ruim=1 · Ruim=2 · Mediano=3 · Bom=4 · Muito Bom=5 · Masterpiece=6  ')
 A('**Parâmetro econômico fixo:** custo líquido médio por jogo = **R$90** (via grupo + revenda). Custo/hora = R$90 ÷ Tempo Total.  ')
 A('**Agente de apoio:** ver `agente_perfil_gamer.md` — especialista que categoriza e analisa junto com o usuário.\n')
 A('---\n')
@@ -127,11 +127,11 @@ A('| Padrão | Observação |')
 A('|---|---|')
 A('| **Gameplay é o motor do veredicto** | História amplifica, não sustenta; para souls-likes história não é eixo |')
 A('| **Fun Factor 4 → conclusão garantida** | Padrão histórico de 100% |')
-A('| **Horas jogadas ≠ qualidade** | Valhalla 131h = Medíocre (jogo gigante + pandemia); Tsushima 65h = Masterpiece |')
-A('| **Retentativa de jogo dropado: 0% de sucesso** | Nenhuma passou de Medíocre — diferente de replay de jogo zerado |')
+A('| **Horas jogadas ≠ qualidade** | Valhalla 131h = Mediano (jogo gigante + pandemia); Tsushima 65h = Masterpiece |')
+A('| **Retentativa de jogo dropado: 0% de sucesso** | Nenhuma passou de Mediano — diferente de replay de jogo zerado |')
 A('| **Walkthrough >=2 = jogo amado (ou DLC)** | Tsushima e Exp33 Masterpiece, TLoU; exceção FFXV (DLCs) |')
 A('| **Fórmula Ubisoft = risco alto** | Odyssey/Origins/Outlaws Muito Ruim e drop; exceção parcial: Shadows em NG+ |')
-A('| **Souls-like só FromSoftware** | Elden Ring/Sekiro Masterpiece vs LotF/Demon Souls Medíocre, Khazan/Wuchang drop |')
+A('| **Souls-like só FromSoftware** | Elden Ring/Sekiro Masterpiece vs LotF/Demon Souls Mediano, Khazan/Wuchang drop |')
 A('| **Survival Horror: 100% conclusão** | Gênero subestimado na coleção |')
 A("| **Sem fast travel fácil = drop** | Dragon's Dogma 2, FFXII, Kingdom Come II |")
 A('| **Combate simples = drop mesmo com boa escrita** | AC Black Flag Resync: cutscenes boas, dropado em 13h |')
@@ -160,7 +160,7 @@ for g in sorted(drop,key=lambda x:-x['horas']):
 A('')
 A('---\n')
 A(f'*Documentação {VERSAO} — atualizada em {HOJE}*  ')
-A('*Alterações v11: Ajustes de veredicto confirmados pelo usuário — Valhalla Bom→Medíocre, Demon Souls Bom→Medíocre, Hogwarts Ruim→Bom, Black Flag Resync Muito Ruim→Ruim · Gerador `gerar_doc.py` criado · Spec do agente em `agente_perfil_gamer.md`*  ')
+A('*Alterações v11: Ajustes de veredicto confirmados pelo usuário — Valhalla Bom→Mediano, Demon Souls Bom→Mediano, Hogwarts Ruim→Bom, Black Flag Resync Muito Ruim→Ruim · Gerador `gerar_doc.py` criado · Spec do agente em `agente_perfil_gamer.md`*  ')
 A('*Alterações v10: Sistema de Veredictos (6 níveis, estilo ACG) substitui nota numérica · Componentes 1–4 mantidos internos*  ')
 A('*Alterações v9: HLTB e Tempo PS4/PS5 removidos · Exp33 79h W=2 · AC Shadows NG+ R$60 · Black Flag Resync adicionado · Tsushima 65h, HZD 25h*')
 
